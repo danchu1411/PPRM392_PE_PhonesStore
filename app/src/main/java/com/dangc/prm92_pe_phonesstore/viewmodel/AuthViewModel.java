@@ -10,6 +10,7 @@ import androidx.lifecycle.Transformations;
 import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
 import com.dangc.prm92_pe_phonesstore.data.repository.UserRepository;
+import com.dangc.prm92_pe_phonesstore.util.ValidationUtil;
 
 import java.util.concurrent.ExecutorService;
 
@@ -18,16 +19,12 @@ public class AuthViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
     private final ExecutorService executorService;
 
-    // LiveData này sẽ chỉ được sử dụng để trigger việc login
     private final MutableLiveData<LoginCredentials> loginRequest = new MutableLiveData<>();
-
-    // LiveData chứa thông tin user, được tính toán tự động khi loginRequest thay đổi
     public final LiveData<User> loggedInUser;
 
     private final MutableLiveData<String> _toastMessage = new MutableLiveData<>(null);
     public final LiveData<String> toastMessage = _toastMessage;
 
-    // Lớp helper để chứa email và password
     private static class LoginCredentials {
         String email;
         String password;
@@ -71,15 +68,31 @@ public class AuthViewModel extends AndroidViewModel {
     }
 
     public void register(String fullName, String email, String password) {
-        // ... (không thay đổi)
+        if (!ValidationUtil.isEmailValid(email)) {
+            _toastMessage.setValue("Invalid email address.");
+            return;
+        }
+        if (!ValidationUtil.isPasswordValid(password)) {
+            _toastMessage.setValue("Password must be at least 6 characters long.");
+            return;
+        }
+        if (fullName.isEmpty()) {
+            _toastMessage.setValue("Full name cannot be empty.");
+            return;
+        }
+
         User newUser = new User(fullName, email, password);
         userRepository.register(newUser);
         _toastMessage.setValue("Đăng ký thành công!");
     }
 
     public void login(String email, String password) {
-        if (email.isEmpty() || password.isEmpty()) {
-            _toastMessage.setValue("Vui lòng nhập email và mật khẩu.");
+        if (!ValidationUtil.isEmailValid(email)) {
+            _toastMessage.setValue("Invalid email address.");
+            return;
+        }
+        if (password.isEmpty()) {
+            _toastMessage.setValue("Password cannot be empty.");
             return;
         }
         loginRequest.setValue(new LoginCredentials(email, password));
@@ -87,6 +100,5 @@ public class AuthViewModel extends AndroidViewModel {
 
     public void logout() {
         userRepository.clearLoginSession();
-        // Không cần set loggedInUser thành null nữa, vì nó không còn là MutableLiveData
     }
 }
