@@ -1,11 +1,12 @@
 package com.dangc.prm92_pe_phonesstore;
 
-import android.app.Application;
+import android.content.Context;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.dangc.prm92_pe_phonesstore.data.dao.ProductDao;
 import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 import com.dangc.prm92_pe_phonesstore.data.repository.ProductRepository;
@@ -34,17 +35,16 @@ public class ProductRepositoryTest {
 
     @Before
     public void createDb() {
-        Application application = ApplicationProvider.getApplicationContext();
-        db = Room.inMemoryDatabaseBuilder(application, AppDatabase.class)
+        Context context = ApplicationProvider.getApplicationContext();
+        db = Room.in-memoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
-        // Cần khởi tạo repository với context để nó có thể lấy db
-        productRepository = new ProductRepository(application);
+        ProductDao productDao = db.productDao();
+        productRepository = new ProductRepository(productDao);
     }
 
     @After
     public void closeDb() throws IOException {
-        AppDatabase.getDatabase(ApplicationProvider.getApplicationContext()).close();
         db.close();
     }
 
@@ -55,10 +55,7 @@ public class ProductRepositoryTest {
         
         // Act
         productRepository.insert(product);
-
-        // Chờ một chút để tác vụ ghi hoàn thành
-        Thread.sleep(1000);
-
+        Thread.sleep(500); // Wait for async operation
         List<Product> productList = getOrAwaitValue(productRepository.getAllProducts());
 
         // Assert

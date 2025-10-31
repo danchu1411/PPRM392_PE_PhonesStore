@@ -1,6 +1,5 @@
 package com.dangc.prm92_pe_phonesstore.data.repository;
 
-import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.dangc.prm92_pe_phonesstore.data.dao.OrderDao;
@@ -18,19 +17,15 @@ public class OrderRepository {
     private final OrderItemDao orderItemDao;
     private final ExecutorService databaseWriteExecutor;
 
-    public OrderRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
-        this.orderDao = db.orderDao();
-        this.orderItemDao = db.orderItemDao();
+    public OrderRepository(OrderDao orderDao, OrderItemDao orderItemDao) {
+        this.orderDao = orderDao;
+        this.orderItemDao = orderItemDao;
         this.databaseWriteExecutor = AppDatabase.databaseWriteExecutor;
     }
 
     public void insertOrder(Order order, List<OrderItem> items) {
         databaseWriteExecutor.execute(() -> {
-            // 1. Insert order và lấy lại ID
             long orderId = orderDao.insert(order);
-
-            // 2. Gán ID đó cho tất cả các order item
             for (OrderItem item : items) {
                 item.setOrderId((int) orderId);
                 orderItemDao.insert(item);

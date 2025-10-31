@@ -1,10 +1,11 @@
 package com.dangc.prm92_pe_phonesstore;
 
-import android.app.Application;
+import android.content.Context;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.dangc.prm92_pe_phonesstore.data.dao.UserDao;
 import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
 import com.dangc.prm92_pe_phonesstore.data.repository.UserRepository;
@@ -29,39 +30,31 @@ public class UserRepositoryTest {
 
     @Before
     public void createDb() {
-        Application application = ApplicationProvider.getApplicationContext();
-        // Sử dụng db giả lập trong bộ nhớ
-        db = Room.inMemoryDatabaseBuilder(application, AppDatabase.class)
-                .allowMainThreadQueries() // Cho phép query trên main thread (chỉ cho test)
+        Context context = ApplicationProvider.getApplicationContext();
+        db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
+                .allowMainThreadQueries()
                 .build();
-        userRepository = new UserRepository(application);
+        UserDao userDao = db.userDao();
+        userRepository = new UserRepository(userDao);
     }
 
     @After
     public void closeDb() throws IOException {
-        // Cần phải đóng db được tạo bởi AppDatabase.getDatabase()
-        AppDatabase.getDatabase(ApplicationProvider.getApplicationContext()).close();
         db.close();
     }
 
     @Test
     public void registerAndLoginUser() throws ExecutionException, InterruptedException {
-        // Arrange: Chuẩn bị user
+        // Arrange
         User user = new User("Test User", "test@user.com", "password");
 
-        // Act 1: Đăng ký user. Đây là tác vụ bất đồng bộ "fire-and-forget"
+        // Act
         userRepository.register(user);
-
-        // Chờ một chút để đảm bảo tác vụ ghi đã hoàn thành
-        Thread.sleep(1000); 
-
-        // Act 2: Đăng nhập và lấy Future object
+        Thread.sleep(500); // Wait for async operation
         Future<User> future = userRepository.login("test@user.com", "password");
-
-        // Lấy kết quả từ Future. Lệnh .get() sẽ block cho đến khi có kết quả.
         User loggedInUser = future.get();
 
-        // Assert: Kiểm tra
+        // Assert
         assertNotNull(loggedInUser);
         assertEquals("Test User", loggedInUser.getFullName());
     }

@@ -1,6 +1,6 @@
 package com.dangc.prm92_pe_phonesstore;
 
-import android.app.Application;
+import android.content.Context;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
@@ -38,36 +38,33 @@ public class OrderRepositoryTest {
 
     @Before
     public void createDb() {
-        Application application = ApplicationProvider.getApplicationContext();
-        db = Room.inMemoryDatabaseBuilder(application, AppDatabase.class)
+        Context context = ApplicationProvider.getApplicationContext();
+        db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
-        orderRepository = new OrderRepository(application);
+        // Lấy DAO từ db in-memory và truyền vào repository
+        orderRepository = new OrderRepository(db.orderDao(), db.orderItemDao());
     }
 
     @After
     public void closeDb() throws IOException {
-        AppDatabase.getDatabase(ApplicationProvider.getApplicationContext()).close();
         db.close();
     }
 
     @Test
     public void insertOrderAndVerifyRevenue() throws InterruptedException {
-        // Arrange: Cần insert User và Product trước để không vi phạm khóa ngoại
+        // Arrange: Cần insert User và Product trực tiếp vào db in-memory
         db.userDao().insert(new User("test user", "user@test.com", "123")); // id=1
         db.productDao().insert(new Product("Phone A", "Brand", "", 200, "")); // id=1
 
         // Chuẩn bị Order và OrderItems
         Order order = new Order(1, new Date(), 400.0); // userId=1, total=400
         List<OrderItem> items = new ArrayList<>();
-        // orderId sẽ được gán bởi repository
-        items.add(new OrderItem(0, 1, 2, 200)); // productId=1, quantity=2
+        items.add(new OrderItem(0, 1, 2, 200)); // orderId sẽ được gán bởi repository
 
         // Act: Thêm order vào repository
         orderRepository.insertOrder(order, items);
-
-        // Chờ tác vụ ghi hoàn thành
-        Thread.sleep(1000);
+        Thread.sleep(500); // Chờ tác vụ ghi hoàn thành
 
         // Assert: Lấy tổng doanh thu và kiểm tra
         Double totalRevenue = getOrAwaitValue(orderRepository.getTotalRevenue());

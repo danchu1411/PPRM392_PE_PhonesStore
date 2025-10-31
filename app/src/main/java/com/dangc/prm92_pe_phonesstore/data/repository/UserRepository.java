@@ -1,7 +1,5 @@
 package com.dangc.prm92_pe_phonesstore.data.repository;
 
-import android.app.Application;
-
 import com.dangc.prm92_pe_phonesstore.data.dao.UserDao;
 import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
@@ -15,9 +13,8 @@ public class UserRepository {
     private final UserDao userDao;
     private final ExecutorService databaseWriteExecutor;
 
-    public UserRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
-        this.userDao = db.userDao();
+    public UserRepository(UserDao userDao) {
+        this.userDao = userDao;
         this.databaseWriteExecutor = AppDatabase.databaseWriteExecutor;
     }
 

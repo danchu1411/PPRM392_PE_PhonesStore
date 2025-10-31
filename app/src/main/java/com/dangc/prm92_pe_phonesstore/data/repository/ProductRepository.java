@@ -1,6 +1,5 @@
 package com.dangc.prm92_pe_phonesstore.data.repository;
 
-import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.dangc.prm92_pe_phonesstore.data.dao.ProductDao;
@@ -15,12 +14,12 @@ public class ProductRepository {
     private final ProductDao productDao;
     private final ExecutorService databaseWriteExecutor;
 
-    public ProductRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
-        this.productDao = db.productDao();
+    public ProductRepository(ProductDao productDao) {
+        this.productDao = productDao;
         this.databaseWriteExecutor = AppDatabase.databaseWriteExecutor;
     }
 
+    // Read operations (LiveData handles threading automatically)
     public LiveData<List<Product>> getAllProducts() {
         return productDao.getAllProducts();
     }
@@ -41,6 +40,7 @@ public class ProductRepository {
         return productDao.getProductsSortedByPriceDesc();
     }
 
+    // Write operations (must be on a background thread)
     public void insert(Product product) {
         databaseWriteExecutor.execute(() -> {
             productDao.insert(product);
