@@ -15,42 +15,33 @@
 Các lớp Entity dưới đây đã được tạo và cấu hình với Room Database, đại diện cho cấu trúc dữ liệu chính trong ứng dụng:
 
 *   **`Product`**: Đại diện cho thông tin chi tiết về một sản phẩm điện thoại.
-    *   `productId` (Primary Key, Auto-generate)
-    *   `modelName`
-    *   `brand`
-    *   `description`
-    *   `price`
-    *   `imageUrl`
-
 *   **`User`**: Đại diện cho thông tin người dùng.
-    *   `userId` (Primary Key, Auto-generate)
-    *   `fullName`
-    *   `email` (Unique Index)
-    *   `password`
-
 *   **`Order`**: Đại diện cho một đơn hàng.
-    *   `orderId` (Primary Key, Auto-generate)
-    *   `userId` (Foreign Key tới `User`)
-    *   `orderDate` (Sử dụng `DateConverter`)
-    *   `totalAmount`
+*   **`OrderItem`**: Bảng trung gian giải quyết mối quan hệ nhiều-nhiều giữa `Order` và `Product`.
+*   **`DateConverter`**: Lớp `TypeConverter` để lưu trữ kiểu dữ liệu `Date` trong Room.
 
-*   **`OrderItem`**: Bảng trung gian, đại diện cho các sản phẩm cụ thể trong một đơn hàng (giải quyết mối quan hệ nhiều-nhiều giữa `Order` và `Product`).
-    *   `orderItemId` (Primary Key, Auto-generate)
-    *   `orderId` (Foreign Key tới `Order`)
-    *   `productId` (Foreign Key tới `Product`)
-    *   `quantity`
-    *   `pricePerUnit`
+## Data Layer Components
 
-*   **`DateConverter`**: Một lớp `TypeConverter` được sử dụng bởi Room để chuyển đổi kiểu dữ liệu `java.util.Date` sang `Long` (timestamp) và ngược lại, giúp lưu trữ ngày tháng trong SQLite.
-
-## Data Access Objects (DAO)
+### Data Access Objects (DAO)
 
 Các interface DAO cung cấp một API an toàn và trừu tượng để tương tác với database. Mỗi Entity có một DAO tương ứng chịu trách nhiệm cho các hoạt động truy vấn dữ liệu.
 
 *   **`ProductDao`**: Cung cấp các phương thức để Thêm, Sửa, Xóa, Lấy danh sách sản phẩm, Tìm kiếm và Sắp xếp sản phẩm theo giá.
-*   **`UserDao`**: Cung cấp các phương thức để đăng ký người dùng mới và tìm kiếm người dùng (để xác thực đăng nhập).
-*   **`OrderDao`**: Cung cấp phương thức để lưu một đơn hàng mới và tính tổng doanh thu từ tất cả các đơn hàng.
+*   **`UserDao`**: Cung cấp các phương thức để đăng ký và xác thực người dùng.
+*   **`OrderDao`**: Cung cấp phương thức để lưu một đơn hàng mới và tính tổng doanh thu.
 *   **`OrderItemDao`**: Cung cấp phương thức để lưu các mục chi tiết của một đơn hàng.
+
+### Repositories
+
+Các lớp Repository đóng vai trò là nguồn cung cấp dữ liệu duy nhất (Single Source of Truth) cho các ViewModel. Chúng trừu tượng hóa các nguồn dữ liệu (local database, remote API) và quản lý việc thực thi các tác vụ trên các luồng nền thích hợp.
+
+*   **`ProductRepository`**: Quản lý dữ liệu sản phẩm.
+*   **`UserRepository`**: Quản lý việc đăng ký, đăng nhập và phiên làm việc của người dùng.
+*   **`OrderRepository`**: Quản lý việc tạo đơn hàng và thống kê doanh thu.
+
+### Preferences
+
+*   **`UserPreferences`**: Một lớp helper sử dụng `SharedPreferences` để quản lý phiên đăng nhập của người dùng (Auto-Login). Nó lưu `userId` của người dùng khi đăng nhập thành công và xóa khi đăng xuất.
 
 ## Công nghệ sử dụng
 
@@ -58,7 +49,8 @@ Các interface DAO cung cấp một API an toàn và trừu tượng để tươ
 *   **Hệ thống Build:** Gradle
 *   **Kiến trúc:** MVVM + Repository Pattern
 *   **Database:** Room Database (dựa trên SQLite)
-*   **Xử lý bất đồng bộ:** LiveData
+*   **Quản lý phiên:** SharedPreferences
+*   **Xử lý bất đồng bộ:** LiveData, `ExecutorService`
 
 ## Cài đặt và Chạy
 
@@ -70,16 +62,3 @@ Các interface DAO cung cấp một API an toàn và trừu tượng để tươ
 2.  **Mở trong Android Studio:** Mở thư mục dự án trong Android Studio.
 3.  **Đồng bộ Gradle:** Đảm bảo Gradle được đồng bộ hóa thành công để tải về tất cả các dependencies.
 4.  **Chạy ứng dụng:** Chạy ứng dụng trên một thiết bị Android emulator hoặc thiết bị vật lý.
-
-### Mock API (Tùy chọn cho phát triển)
-
-Trong quá trình phát triển ban đầu, ứng dụng có thể sử dụng Mock API (ví dụ: JSON Server) để giả lập dữ liệu từ máy chủ. Điều này giúp phát triển giao diện người dùng và logic ViewModel mà không cần chờ đợi triển khai database hoàn chỉnh.
-
-Để sử dụng JSON Server:
-1.  Cài đặt Node.js.
-2.  Tạo file `db.json` với cấu trúc dữ liệu mong muốn tại thư mục gốc của dự án.
-3.  Chạy lệnh:
-    ```bash
-    npx json-server --watch db.json
-    ```
-4.  Cấu hình `ProductRepository` (hoặc các Repository khác) để lấy dữ liệu từ endpoint mà JSON Server cung cấp (ví dụ: `http://localhost:3000/products`).

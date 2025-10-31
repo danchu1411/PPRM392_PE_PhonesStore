@@ -26,6 +26,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -46,4 +49,15 @@ dependencies {
     // Core library for testing Architecture Components, including LiveData
     def arch_version = "2.2.0"
     androidTestImplementation "androidx.arch.core:core-testing:$arch_version"
+    testImplementation "androidx.arch.core:core-testing:$arch_version" // For unit tests
+
+    // ViewModel and LiveData
+    def lifecycle_version = "2.7.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+    // Mockito for unit tests
+    def mockito_version = "4.8.0"
+    testImplementation "org.mockito:mockito-core:$mockito_version"
 }
