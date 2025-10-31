@@ -60,4 +60,9 @@ dependencies {
     // Mockito for unit tests
     def mockito_version = "4.8.0"
     testImplementation "org.mockito:mockito-core:$mockito_version"
+
+    // Navigation Component
+    def nav_version = "2.7.7"
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
 }
