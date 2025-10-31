@@ -59,7 +59,6 @@ public class RegisterFragment extends Fragment {
         });
 
         textViewLogin.setOnClickListener(v -> {
-            // Quay lại màn hình Login
             NavController navController = Navigation.findNavController(v);
             navController.navigateUp();
         });
@@ -67,10 +66,11 @@ public class RegisterFragment extends Fragment {
         authViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.isEmpty()) {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                // Nếu đăng ký thành công, có thể tự động quay về màn hình login
                 if (message.equals("Đăng ký thành công!")) {
                     Navigation.findNavController(view).navigateUp();
                 }
+                // Luôn gọi sau khi đã xử lý
+                authViewModel.doneShowingToast();
             }
         });
     }

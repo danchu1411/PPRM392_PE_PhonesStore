@@ -51,13 +51,14 @@ public class LoginFragment extends Fragment {
 
         textViewRegister.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(v);
-            // Sử dụng action đã định nghĩa trong auth_nav_graph.xml
             navController.navigate(R.id.action_loginFragment_to_registerFragment);
         });
 
         authViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.isEmpty()) {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                // Sau khi hiển thị, báo cho ViewModel biết
+                authViewModel.doneShowingToast();
             }
         });
     }

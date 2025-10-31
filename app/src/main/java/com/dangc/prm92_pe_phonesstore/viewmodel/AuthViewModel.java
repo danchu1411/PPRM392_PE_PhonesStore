@@ -101,4 +101,11 @@ public class AuthViewModel extends AndroidViewModel {
     public void logout() {
         userRepository.clearLoginSession();
     }
+
+    /**
+     * Call this method after the toast has been shown.
+     */
+    public void doneShowingToast() {
+        _toastMessage.setValue(null);
+    }
 }
