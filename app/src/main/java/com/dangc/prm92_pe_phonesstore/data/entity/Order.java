@@ -3,6 +3,7 @@ package com.dangc.prm92_pe_phonesstore.data.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
@@ -14,7 +15,8 @@ import java.util.Date;
         foreignKeys = @ForeignKey(entity = User.class,
                                   parentColumns = "user_id",
                                   childColumns = "user_id",
-                                  onDelete = ForeignKey.CASCADE))
+                                  onDelete = ForeignKey.CASCADE),
+        indices = {@Index(value = {"user_id"})}) // <--- THÊM DÒNG NÀY
 @TypeConverters(DateConverter.class)
 public class Order {
 

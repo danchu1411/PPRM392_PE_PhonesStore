@@ -19,7 +19,6 @@ public class ProductRepository {
         this.databaseWriteExecutor = AppDatabase.databaseWriteExecutor;
     }
 
-    // Read operations (LiveData handles threading automatically)
     public LiveData<List<Product>> getAllProducts() {
         return productDao.getAllProducts();
     }
