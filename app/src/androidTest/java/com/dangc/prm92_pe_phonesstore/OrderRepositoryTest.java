@@ -12,6 +12,8 @@ import com.dangc.prm92_pe_phonesstore.data.entity.OrderItem;
 import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
 import com.dangc.prm92_pe_phonesstore.data.repository.OrderRepository;
+import com.dangc.prm92_pe_phonesstore.util.LiveDataTestUtil;
+
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.dangc.prm92_pe_phonesstore.ProductDaoTest.getOrAwaitValue;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
@@ -42,8 +43,8 @@ public class OrderRepositoryTest {
         db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
-        // Lấy DAO từ db in-memory và truyền vào repository
-        orderRepository = new OrderRepository(db.orderDao(), db.orderItemDao());
+        // Lấy DAO và Executor từ db in-memory và truyền vào repository
+        orderRepository = new OrderRepository(db.orderDao(), db.orderItemDao(), db.databaseWriteExecutor);
     }
 
     @After
@@ -67,7 +68,7 @@ public class OrderRepositoryTest {
         Thread.sleep(500); // Chờ tác vụ ghi hoàn thành
 
         // Assert: Lấy tổng doanh thu và kiểm tra
-        Double totalRevenue = getOrAwaitValue(orderRepository.getTotalRevenue());
+        Double totalRevenue = LiveDataTestUtil.getOrAwaitValue(orderRepository.getTotalRevenue());
         assertEquals(400.0, totalRevenue, 0.0);
     }
 }

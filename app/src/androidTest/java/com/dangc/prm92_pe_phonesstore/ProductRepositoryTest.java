@@ -10,6 +10,7 @@ import com.dangc.prm92_pe_phonesstore.data.dao.ProductDao;
 import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 import com.dangc.prm92_pe_phonesstore.data.repository.ProductRepository;
+import com.dangc.prm92_pe_phonesstore.util.LiveDataTestUtil;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
-import static com.dangc.prm92_pe_phonesstore.ProductDaoTest.getOrAwaitValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -40,7 +40,7 @@ public class ProductRepositoryTest {
                 .allowMainThreadQueries()
                 .build();
         ProductDao productDao = db.productDao();
-        productRepository = new ProductRepository(productDao);
+        productRepository = new ProductRepository(productDao, db.databaseWriteExecutor);
     }
 
     @After
@@ -56,7 +56,7 @@ public class ProductRepositoryTest {
         // Act
         productRepository.insert(product);
         Thread.sleep(500); // Wait for async operation
-        List<Product> productList = getOrAwaitValue(productRepository.getAllProducts());
+        List<Product> productList = LiveDataTestUtil.getOrAwaitValue(productRepository.getAllProducts());
 
         // Assert
         assertFalse(productList.isEmpty());

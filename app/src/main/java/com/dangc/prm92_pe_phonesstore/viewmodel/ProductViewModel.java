@@ -28,14 +28,13 @@ public class ProductViewModel extends AndroidViewModel {
         PRICE_DESC
     }
     
-    // Constructor chính
     public ProductViewModel(@NonNull Application application) {
         super(application);
-        this.productRepository = new ProductRepository(AppDatabase.getDatabase(application).productDao());
+        AppDatabase db = AppDatabase.getDatabase(application);
+        this.productRepository = new ProductRepository(db.productDao(), db.databaseWriteExecutor);
         this.products = createProductsLiveData();
     }
 
-    // Constructor cho test
     public ProductViewModel(@NonNull Application application, @NonNull ProductRepository productRepository) {
         super(application);
         this.productRepository = productRepository;

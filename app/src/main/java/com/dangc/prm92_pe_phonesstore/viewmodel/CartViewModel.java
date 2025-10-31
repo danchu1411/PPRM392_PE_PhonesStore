@@ -22,7 +22,6 @@ public class CartViewModel extends AndroidViewModel {
 
     private final OrderRepository orderRepository;
 
-    // Giỏ hàng được lưu trong bộ nhớ
     private final MutableLiveData<Map<Product, Integer>> _cartItems = new MutableLiveData<>(new HashMap<>());
     public final LiveData<Map<Product, Integer>> cartItems = _cartItems;
 
@@ -31,18 +30,23 @@ public class CartViewModel extends AndroidViewModel {
 
     public CartViewModel(@NonNull Application application) {
         super(application);
-        orderRepository = new OrderRepository(
-                AppDatabase.getDatabase(application).orderDao(),
-                AppDatabase.getDatabase(application).orderItemDao()
+        AppDatabase db = AppDatabase.getDatabase(application);
+        this.orderRepository = new OrderRepository(
+                db.orderDao(),
+                db.orderItemDao(),
+                db.databaseWriteExecutor
         );
+    }
+
+    public CartViewModel(@NonNull Application application, @NonNull OrderRepository orderRepository) {
+        super(application);
+        this.orderRepository = orderRepository;
     }
 
     public void addProductToCart(Product product) {
         Map<Product, Integer> currentCart = _cartItems.getValue();
-        if (currentCart == null) {
-            currentCart = new HashMap<>();
-        }
-
+        if (currentCart == null) currentCart = new HashMap<>();
+        
         int quantity = currentCart.containsKey(product) ? currentCart.get(product) + 1 : 1;
         currentCart.put(product, quantity);
         _cartItems.setValue(currentCart);
@@ -75,7 +79,6 @@ public class CartViewModel extends AndroidViewModel {
         }
 
         orderRepository.insertOrder(order, orderItems);
-        // Xóa giỏ hàng sau khi checkout
         _cartItems.setValue(new HashMap<>());
         updateTotalPrice();
     }

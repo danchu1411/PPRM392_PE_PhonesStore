@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 
 import com.dangc.prm92_pe_phonesstore.data.dao.OrderDao;
 import com.dangc.prm92_pe_phonesstore.data.dao.OrderItemDao;
-import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.Order;
 import com.dangc.prm92_pe_phonesstore.data.entity.OrderItem;
 
@@ -17,10 +16,10 @@ public class OrderRepository {
     private final OrderItemDao orderItemDao;
     private final ExecutorService databaseWriteExecutor;
 
-    public OrderRepository(OrderDao orderDao, OrderItemDao orderItemDao) {
+    public OrderRepository(OrderDao orderDao, OrderItemDao orderItemDao, ExecutorService executorService) {
         this.orderDao = orderDao;
         this.orderItemDao = orderItemDao;
-        this.databaseWriteExecutor = AppDatabase.databaseWriteExecutor;
+        this.databaseWriteExecutor = executorService;
     }
 
     public void insertOrder(Order order, List<OrderItem> items) {

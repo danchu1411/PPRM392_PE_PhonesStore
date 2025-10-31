@@ -5,45 +5,73 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
 import com.dangc.prm92_pe_phonesstore.data.repository.UserRepository;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 public class AuthViewModel extends AndroidViewModel {
 
     private final UserRepository userRepository;
+    private final ExecutorService executorService;
 
-    // Trạng thái đăng nhập của người dùng
-    private final MutableLiveData<User> _loggedInUser = new MutableLiveData<>(null);
-    public final LiveData<User> loggedInUser = _loggedInUser;
+    // LiveData này sẽ chỉ được sử dụng để trigger việc login
+    private final MutableLiveData<LoginCredentials> loginRequest = new MutableLiveData<>();
 
-    // Thông báo cho UI (ví dụ: "Đăng nhập thất bại")
+    // LiveData chứa thông tin user, được tính toán tự động khi loginRequest thay đổi
+    public final LiveData<User> loggedInUser;
+
     private final MutableLiveData<String> _toastMessage = new MutableLiveData<>(null);
     public final LiveData<String> toastMessage = _toastMessage;
-    
-    // Constructor chính cho ứng dụng
-    public AuthViewModel(@NonNull Application application) {
-        super(application);
-        this.userRepository = new UserRepository(
-                AppDatabase.getDatabase(application).userDao(),
-                application.getApplicationContext()
-        );
+
+    // Lớp helper để chứa email và password
+    private static class LoginCredentials {
+        String email;
+        String password;
+        LoginCredentials(String email, String password) {
+            this.email = email;
+            this.password = password;
+        }
     }
 
-    // Constructor phụ cho việc test
-    public AuthViewModel(@NonNull Application application, @NonNull UserRepository userRepository) {
+    public AuthViewModel(@NonNull Application application) {
+        super(application);
+        AppDatabase db = AppDatabase.getDatabase(application);
+        this.userRepository = new UserRepository(
+                db.userDao(),
+                application.getApplicationContext(),
+                db.databaseWriteExecutor
+        );
+        this.executorService = db.databaseWriteExecutor;
+        this.loggedInUser = createLoggedInUserLiveData();
+    }
+
+    public AuthViewModel(@NonNull Application application, @NonNull UserRepository userRepository, @NonNull ExecutorService executorService) {
         super(application);
         this.userRepository = userRepository;
+        this.executorService = executorService;
+        this.loggedInUser = createLoggedInUserLiveData();
+    }
+
+    private LiveData<User> createLoggedInUserLiveData() {
+        return Transformations.switchMap(loginRequest, credentials -> {
+            MutableLiveData<User> result = new MutableLiveData<>();
+            executorService.execute(() -> {
+                User user = userRepository.login(credentials.email, credentials.password);
+                if (user != null) {
+                    userRepository.saveLoginSession(user);
+                }
+                result.postValue(user);
+            });
+            return result;
+        });
     }
 
     public void register(String fullName, String email, String password) {
-        if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            _toastMessage.setValue("Vui lòng điền đầy đủ thông tin.");
-            return;
-        }
+        // ... (không thay đổi)
         User newUser = new User(fullName, email, password);
         userRepository.register(newUser);
         _toastMessage.setValue("Đăng ký thành công!");
@@ -54,24 +82,11 @@ public class AuthViewModel extends AndroidViewModel {
             _toastMessage.setValue("Vui lòng nhập email và mật khẩu.");
             return;
         }
-
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            try {
-                User user = userRepository.login(email, password).get();
-                if (user != null) {
-                    userRepository.saveLoginSession(user);
-                    _loggedInUser.postValue(user);
-                } else {
-                    _toastMessage.postValue("Email hoặc mật khẩu không chính xác.");
-                }
-            } catch (ExecutionException | InterruptedException e) {
-                _toastMessage.postValue("Đã có lỗi xảy ra khi đăng nhập.");
-            }
-        });
+        loginRequest.setValue(new LoginCredentials(email, password));
     }
 
     public void logout() {
         userRepository.clearLoginSession();
-        _loggedInUser.setValue(null);
+        // Không cần set loggedInUser thành null nữa, vì nó không còn là MutableLiveData
     }
 }

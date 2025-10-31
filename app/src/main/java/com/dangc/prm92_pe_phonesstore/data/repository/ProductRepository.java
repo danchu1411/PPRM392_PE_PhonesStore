@@ -3,7 +3,6 @@ package com.dangc.prm92_pe_phonesstore.data.repository;
 import androidx.lifecycle.LiveData;
 
 import com.dangc.prm92_pe_phonesstore.data.dao.ProductDao;
-import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 
 import java.util.List;
@@ -14,11 +13,12 @@ public class ProductRepository {
     private final ProductDao productDao;
     private final ExecutorService databaseWriteExecutor;
 
-    public ProductRepository(ProductDao productDao) {
+    public ProductRepository(ProductDao productDao, ExecutorService executorService) {
         this.productDao = productDao;
-        this.databaseWriteExecutor = AppDatabase.databaseWriteExecutor;
+        this.databaseWriteExecutor = executorService;
     }
 
+    // Read operations
     public LiveData<List<Product>> getAllProducts() {
         return productDao.getAllProducts();
     }
@@ -39,22 +39,16 @@ public class ProductRepository {
         return productDao.getProductsSortedByPriceDesc();
     }
 
-    // Write operations (must be on a background thread)
+    // Write operations
     public void insert(Product product) {
-        databaseWriteExecutor.execute(() -> {
-            productDao.insert(product);
-        });
+        databaseWriteExecutor.execute(() -> productDao.insert(product));
     }
 
     public void update(Product product) {
-        databaseWriteExecutor.execute(() -> {
-            productDao.update(product);
-        });
+        databaseWriteExecutor.execute(() -> productDao.update(product));
     }
 
     public void delete(Product product) {
-        databaseWriteExecutor.execute(() -> {
-            productDao.delete(product);
-        });
+        databaseWriteExecutor.execute(() -> productDao.delete(product));
     }
 }

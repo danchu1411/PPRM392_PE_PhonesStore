@@ -12,7 +12,7 @@ import com.dangc.prm92_pe_phonesstore.data.entity.User;
 public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(User user);
+    long insert(User user);
 
     @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
     User findByEmailAndPassword(String email, String password);
