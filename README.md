@@ -43,6 +43,15 @@ Các lớp Entity dưới đây đã được tạo và cấu hình với Room D
 
 *   **`DateConverter`**: Một lớp `TypeConverter` được sử dụng bởi Room để chuyển đổi kiểu dữ liệu `java.util.Date` sang `Long` (timestamp) và ngược lại, giúp lưu trữ ngày tháng trong SQLite.
 
+## Data Access Objects (DAO)
+
+Các interface DAO cung cấp một API an toàn và trừu tượng để tương tác với database. Mỗi Entity có một DAO tương ứng chịu trách nhiệm cho các hoạt động truy vấn dữ liệu.
+
+*   **`ProductDao`**: Cung cấp các phương thức để Thêm, Sửa, Xóa, Lấy danh sách sản phẩm, Tìm kiếm và Sắp xếp sản phẩm theo giá.
+*   **`UserDao`**: Cung cấp các phương thức để đăng ký người dùng mới và tìm kiếm người dùng (để xác thực đăng nhập).
+*   **`OrderDao`**: Cung cấp phương thức để lưu một đơn hàng mới và tính tổng doanh thu từ tất cả các đơn hàng.
+*   **`OrderItemDao`**: Cung cấp phương thức để lưu các mục chi tiết của một đơn hàng.
+
 ## Công nghệ sử dụng
 
 *   **Ngôn ngữ:** Java
