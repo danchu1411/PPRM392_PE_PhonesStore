@@ -60,8 +60,11 @@ public class AuthViewModel extends AndroidViewModel {
                 User user = userRepository.login(credentials.email, credentials.password);
                 if (user != null) {
                     userRepository.saveLoginSession(user);
+                    result.postValue(user);
+                } else {
+                    _toastMessage.postValue("Email hoặc mật khẩu không chính xác.");
+                    result.postValue(null);
                 }
-                result.postValue(user);
             });
             return result;
         });
@@ -102,9 +105,6 @@ public class AuthViewModel extends AndroidViewModel {
         userRepository.clearLoginSession();
     }
 
-    /**
-     * Call this method after the toast has been shown.
-     */
     public void doneShowingToast() {
         _toastMessage.setValue(null);
     }
