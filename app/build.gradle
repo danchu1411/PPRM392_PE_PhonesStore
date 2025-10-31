@@ -3,15 +3,13 @@ plugins {
 }
 
 android {
-    namespace 'com.example.prm392_pe_phonesstore'
-    compileSdk {
-        version = release(36)
-    }
+    namespace 'com.dangc.prm92_pe_phonesstore'
+    compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.prm392_pe_phonesstore"
+        applicationId "com.dangc.prm92_pe_phonesstore"
         minSdk 24
-        targetSdk 36
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -38,4 +36,9 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    // Room Database Dependencies
+    def room_version = "2.6.1"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 }
