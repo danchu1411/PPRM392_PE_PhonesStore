@@ -12,7 +12,7 @@ import com.dangc.prm92_pe_phonesstore.data.entity.Order;
 public interface OrderDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Order order);
+    long insert(Order order); // Thay đổi: trả về long
 
     @Query("SELECT SUM(total_amount) FROM orders")
     LiveData<Double> getTotalRevenue();
