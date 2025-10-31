@@ -41,4 +41,9 @@ dependencies {
     def room_version = "2.6.1"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
+
+    // Core library for testing Architecture Components, including LiveData
+    def arch_version = "2.2.0"
+    androidTestImplementation "androidx.arch.core:core-testing:$arch_version"
 }
