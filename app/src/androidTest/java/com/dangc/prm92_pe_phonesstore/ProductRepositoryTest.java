@@ -36,7 +36,7 @@ public class ProductRepositoryTest {
     @Before
     public void createDb() {
         Context context = ApplicationProvider.getApplicationContext();
-        db = Room.in-memoryDatabaseBuilder(context, AppDatabase.class)
+        db = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
                 .allowMainThreadQueries()
                 .build();
         ProductDao productDao = db.productDao();
