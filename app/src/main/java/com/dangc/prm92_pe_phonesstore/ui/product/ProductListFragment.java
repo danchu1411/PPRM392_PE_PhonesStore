@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dangc.prm92_pe_phonesstore.R;
@@ -24,7 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class ProductListFragment extends Fragment {
 
     private ProductViewModel productViewModel;
-    private AuthViewModel authViewModel; // Thêm AuthViewModel
+    private AuthViewModel authViewModel;
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
     private ProgressBar progressBar;
@@ -41,22 +43,17 @@ public class ProductListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Khởi tạo Views
         recyclerView = view.findViewById(R.id.recyclerViewProducts);
         progressBar = view.findViewById(R.id.progressBar);
         textViewEmpty = view.findViewById(R.id.textViewEmpty);
         fabAddProduct = view.findViewById(R.id.fabAddProduct);
 
-        // Thiết lập Adapter
         adapter = new ProductAdapter();
         recyclerView.setAdapter(adapter);
 
-        // Lấy ViewModels
-        productViewModel = new ViewModelProvider(this).get(ProductViewModel.class);
-        // Lấy AuthViewModel từ scope của Activity
+        productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        // Quan sát dữ liệu sản phẩm
         productViewModel.products.observe(getViewLifecycleOwner(), products -> {
             progressBar.setVisibility(View.GONE);
             if (products != null && !products.isEmpty()) {
@@ -67,12 +64,12 @@ public class ProductListFragment extends Fragment {
             }
         });
 
-        // Xử lý sự kiện click cho FAB
         fabAddProduct.setOnClickListener(v -> {
-            // TODO: Điều hướng đến màn hình AddEditProductFragment
+            // Sử dụng NavController để điều hướng đến AddEditProductFragment
+            NavController navController = Navigation.findNavController(v);
+            navController.navigate(R.id.action_productListFragment_to_addEditProductFragment);
         });
 
-        // Xử lý nút Back
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -86,7 +83,6 @@ public class ProductListFragment extends Fragment {
                 .setTitle("Confirm Logout")
                 .setMessage("Are you sure you want to return to the login screen?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    // Xử lý đăng xuất và điều hướng
                     authViewModel.logout();
                     Intent intent = new Intent(getActivity(), AuthActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
