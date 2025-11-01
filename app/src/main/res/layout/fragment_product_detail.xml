@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.product.ProductDetailFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"> <!-- Thêm padding dưới để có khoảng trống -->
+
+        <ImageView
+            android:id="@+id/imageViewProductDetail"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <!-- Model Name -->
+        <TextView
+            android:id="@+id/labelModelName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Model Name:"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageViewProductDetail" />
+
+        <TextView
+            android:id="@+id/textViewNameDetail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintEnd_toEndOf="@+id/labelModelName"
+            app:layout_constraintStart_toStartOf="@+id/labelModelName"
+            app:layout_constraintTop_toBottomOf="@id/labelModelName"
+            tools:text="iPhone 14 Pro Max" />
+
+        <!-- Brand -->
+        <TextView
+            android:id="@+id/labelBrand"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Brand:"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/textViewNameDetail"
+            app:layout_constraintStart_toStartOf="@+id/textViewNameDetail"
+            app:layout_constraintTop_toBottomOf="@id/textViewNameDetail" />
+
+        <TextView
+            android:id="@+id/textViewBrandDetail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintEnd_toEndOf="@+id/labelBrand"
+            app:layout_constraintStart_toStartOf="@+id/labelBrand"
+            app:layout_constraintTop_toBottomOf="@id/labelBrand"
+            tools:text="Apple" />
+
+        <!-- Price -->
+        <TextView
+            android:id="@+id/labelPrice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Price:"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/textViewBrandDetail"
+            app:layout_constraintStart_toStartOf="@+id/textViewBrandDetail"
+            app:layout_constraintTop_toBottomOf="@id/textViewBrandDetail" />
+
+        <TextView
+            android:id="@+id/textViewPriceDetail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintEnd_toEndOf="@+id/labelPrice"
+            app:layout_constraintStart_toStartOf="@+id/labelPrice"
+            app:layout_constraintTop_toBottomOf="@id/labelPrice"
+            tools:text="$1099.00" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/labelDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Description:"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/textViewPriceDetail"
+            app:layout_constraintStart_toStartOf="@+id/textViewPriceDetail"
+            app:layout_constraintTop_toBottomOf="@id/textViewPriceDetail" />
+
+        <TextView
+            android:id="@+id/textViewDescriptionDetail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintEnd_toEndOf="@+id/labelDescription"
+            app:layout_constraintStart_toStartOf="@+id/labelDescription"
+            app:layout_constraintTop_toBottomOf="@id/labelDescription"
+            tools:text="This is a long description of the product, detailing its features, specifications, and other relevant information." />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

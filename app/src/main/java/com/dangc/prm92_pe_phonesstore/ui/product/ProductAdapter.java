@@ -16,6 +16,8 @@ import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 
 public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductViewHolder> {
 
+    private OnItemClickListener listener;
+
     public ProductAdapter() {
         super(DIFF_CALLBACK);
     }
@@ -30,7 +32,7 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
         public boolean areContentsTheSame(@NonNull Product oldItem, @NonNull Product newItem) {
             return oldItem.getModelName().equals(newItem.getModelName()) &&
                    oldItem.getPrice() == newItem.getPrice() &&
-                   oldItem.getImageUrl().equals(newItem.getImageUrl()); // So sánh cả URL
+                   oldItem.getImageUrl().equals(newItem.getImageUrl());
         }
     };
 
@@ -48,15 +50,14 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
         holder.textViewBrand.setText(currentProduct.getBrand());
         holder.textViewPrice.setText(String.format("$%.2f", currentProduct.getPrice()));
 
-        // Sử dụng Glide để tải hình ảnh
         Glide.with(holder.itemView.getContext())
-                .load(currentProduct.getImageUrl()) // Lấy URL từ sản phẩm
-                .placeholder(R.drawable.ic_image_placeholder) // Hình ảnh hiển thị trong lúc tải
-                .error(R.drawable.ic_image_broken) // Hình ảnh hiển thị nếu tải lỗi
-                .into(holder.imageViewProduct); // ImageView đích
+                .load(currentProduct.getImageUrl())
+                .placeholder(R.drawable.ic_image_placeholder)
+                .error(R.drawable.ic_image_broken)
+                .into(holder.imageViewProduct);
     }
 
-    static class ProductViewHolder extends RecyclerView.ViewHolder {
+    class ProductViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewName;
         private final TextView textViewBrand;
         private final TextView textViewPrice;
@@ -68,6 +69,21 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
             textViewBrand = itemView.findViewById(R.id.textViewBrand);
             textViewPrice = itemView.findViewById(R.id.textViewPrice);
             imageViewProduct = itemView.findViewById(R.id.imageViewProduct);
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(getItem(position));
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Product product);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }

@@ -65,9 +65,14 @@ public class ProductListFragment extends Fragment {
         });
 
         fabAddProduct.setOnClickListener(v -> {
-            // Sử dụng NavController để điều hướng đến AddEditProductFragment
             NavController navController = Navigation.findNavController(v);
             navController.navigate(R.id.action_productListFragment_to_addEditProductFragment);
+        });
+
+        adapter.setOnItemClickListener(product -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("productId", product.getProductId());
+            Navigation.findNavController(view).navigate(R.id.action_productListFragment_to_productDetailFragment, bundle);
         });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {

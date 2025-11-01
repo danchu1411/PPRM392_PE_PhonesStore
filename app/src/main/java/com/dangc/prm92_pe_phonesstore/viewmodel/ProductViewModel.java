@@ -60,6 +60,11 @@ public class ProductViewModel extends AndroidViewModel {
         );
     }
 
+    // Phương thức mới để lấy một sản phẩm
+    public LiveData<Product> getProductById(int productId) {
+        return productRepository.getProductById(productId);
+    }
+
     public void searchProducts(String query) {
         searchQuery.setValue(query);
     }
