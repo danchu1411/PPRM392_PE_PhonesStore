@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.dangc.prm92_pe_phonesstore.R;
 import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 
@@ -28,7 +29,8 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
         @Override
         public boolean areContentsTheSame(@NonNull Product oldItem, @NonNull Product newItem) {
             return oldItem.getModelName().equals(newItem.getModelName()) &&
-                   oldItem.getPrice() == newItem.getPrice();
+                   oldItem.getPrice() == newItem.getPrice() &&
+                   oldItem.getImageUrl().equals(newItem.getImageUrl()); // So sánh cả URL
         }
     };
 
@@ -45,7 +47,13 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
         holder.textViewName.setText(currentProduct.getModelName());
         holder.textViewBrand.setText(currentProduct.getBrand());
         holder.textViewPrice.setText(String.format("$%.2f", currentProduct.getPrice()));
-        // TODO: Tải hình ảnh bằng thư viện như Glide hoặc Picasso
+
+        // Sử dụng Glide để tải hình ảnh
+        Glide.with(holder.itemView.getContext())
+                .load(currentProduct.getImageUrl()) // Lấy URL từ sản phẩm
+                .placeholder(R.drawable.ic_image_placeholder) // Hình ảnh hiển thị trong lúc tải
+                .error(R.drawable.ic_image_broken) // Hình ảnh hiển thị nếu tải lỗi
+                .into(holder.imageViewProduct); // ImageView đích
     }
 
     static class ProductViewHolder extends RecyclerView.ViewHolder {
