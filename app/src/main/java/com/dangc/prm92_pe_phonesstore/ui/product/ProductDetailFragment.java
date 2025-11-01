@@ -23,12 +23,19 @@ public class ProductDetailFragment extends Fragment {
     private int productId;
 
     private ImageView imageViewProductDetail;
+
+    // Các TextView cho nhãn
+    private TextView labelModelName;
+    private TextView labelBrand;
+    private TextView labelPrice;
+    private TextView labelDescription;
+
+    // Các TextView để hiển thị giá trị
     private TextView textViewNameDetail, textViewBrandDetail, textViewPriceDetail, textViewDescriptionDetail;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Lấy productId từ arguments
         if (getArguments() != null) {
             productId = getArguments().getInt("productId", -1);
         }
@@ -45,6 +52,14 @@ public class ProductDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         imageViewProductDetail = view.findViewById(R.id.imageViewProductDetail);
+
+        // Khởi tạo các TextView nhãn
+        labelModelName = view.findViewById(R.id.labelModelName);
+        labelBrand = view.findViewById(R.id.labelBrand);
+        labelPrice = view.findViewById(R.id.labelPrice);
+        labelDescription = view.findViewById(R.id.labelDescription);
+
+        // Khởi tạo các TextView hiển thị giá trị
         textViewNameDetail = view.findViewById(R.id.textViewNameDetail);
         textViewBrandDetail = view.findViewById(R.id.textViewBrandDetail);
         textViewPriceDetail = view.findViewById(R.id.textViewPriceDetail);

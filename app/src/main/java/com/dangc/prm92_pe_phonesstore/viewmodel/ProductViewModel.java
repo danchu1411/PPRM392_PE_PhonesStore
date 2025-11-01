@@ -59,18 +59,33 @@ public class ProductViewModel extends AndroidViewModel {
             })
         );
     }
-
-    // Phương thức mới để lấy một sản phẩm
+    
+    // THÊM LẠI PHƯƠNG THỨC BỊ THIẾU
     public LiveData<Product> getProductById(int productId) {
         return productRepository.getProductById(productId);
     }
 
-    public void searchProducts(String query) {
-        searchQuery.setValue(query);
+    public void toggleSortOrder() {
+        SortType currentSort = sortType.getValue();
+        if (currentSort == null) {
+            currentSort = SortType.NONE;
+        }
+
+        switch (currentSort) {
+            case NONE:
+                sortType.setValue(SortType.PRICE_ASC);
+                break;
+            case PRICE_ASC:
+                sortType.setValue(SortType.PRICE_DESC);
+                break;
+            case PRICE_DESC:
+                sortType.setValue(SortType.NONE); // Quay lại trạng thái mặc định
+                break;
+        }
     }
 
-    public void sortProducts(SortType type) {
-        sortType.setValue(type);
+    public void searchProducts(String query) {
+        searchQuery.setValue(query);
     }
     
     public void insert(Product product) {
