@@ -60,6 +60,7 @@ public class AuthViewModel extends AndroidViewModel {
                 User user = userRepository.login(credentials.email, credentials.password);
                 if (user != null) {
                     userRepository.saveLoginSession(user);
+                    _toastMessage.postValue("Đăng nhập thành công!"); // THÊM DÒNG NÀY
                     result.postValue(user);
                 } else {
                     _toastMessage.postValue("Email hoặc mật khẩu không chính xác.");

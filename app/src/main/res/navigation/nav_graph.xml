@@ -3,22 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
-
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.dangc.prm92_pe_phonesstore.ui.auth.LoginFragment"
-        android:label="Login"
-        tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_loginFragment_to_productListFragment"
-            app:destination="@id/productListFragment" />
-    </fragment>
+    app:startDestination="@id/productListFragment">
 
     <fragment
         android:id="@+id/productListFragment"
         android:name="com.dangc.prm92_pe_phonesstore.ui.product.ProductListFragment"
         android:label="Products"
-        tools:layout="@layout/fragment_product_list" />
+        tools:layout="@layout/fragment_product_list" >
+        <action
+            android:id="@+id/action_productListFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.product.ProductDetailFragment"
+        android:label="Product Details"
+        tools:layout="@layout/fragment_product_detail" >
+        <argument
+            android:name="productId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.cart.CartFragment"
+        android:label="Shopping Cart"
+        tools:layout="@layout/fragment_cart" />
+
+    <fragment
+        android:id="@+id/revenueFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.revenue.RevenueFragment"
+        android:label="Revenue"
+        tools:layout="@layout/fragment_revenue" />
+
+    <fragment
+        android:id="@+id/addEditProductFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.product.AddEditProductFragment"
+        android:label="Add/Edit Product"
+        tools:layout="@layout/fragment_add_edit_product" />
 
 </navigation>
