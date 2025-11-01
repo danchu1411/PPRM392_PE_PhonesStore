@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.Observer;
 
 import com.dangc.prm92_pe_phonesstore.data.database.AppDatabase;
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
@@ -19,20 +19,11 @@ public class AuthViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
     private final ExecutorService executorService;
 
-    private final MutableLiveData<LoginCredentials> loginRequest = new MutableLiveData<>();
-    public final LiveData<User> loggedInUser;
+    private final MutableLiveData<User> _loggedInUser = new MutableLiveData<>(null);
+    public final LiveData<User> loggedInUser = _loggedInUser;
 
     private final MutableLiveData<String> _toastMessage = new MutableLiveData<>(null);
     public final LiveData<String> toastMessage = _toastMessage;
-
-    private static class LoginCredentials {
-        String email;
-        String password;
-        LoginCredentials(String email, String password) {
-            this.email = email;
-            this.password = password;
-        }
-    }
 
     public AuthViewModel(@NonNull Application application) {
         super(application);
@@ -43,67 +34,70 @@ public class AuthViewModel extends AndroidViewModel {
                 db.databaseWriteExecutor
         );
         this.executorService = db.databaseWriteExecutor;
-        this.loggedInUser = createLoggedInUserLiveData();
+        checkCurrentUser();
     }
 
     public AuthViewModel(@NonNull Application application, @NonNull UserRepository userRepository, @NonNull ExecutorService executorService) {
         super(application);
         this.userRepository = userRepository;
         this.executorService = executorService;
-        this.loggedInUser = createLoggedInUserLiveData();
+        checkCurrentUser();
     }
 
-    private LiveData<User> createLoggedInUserLiveData() {
-        return Transformations.switchMap(loginRequest, credentials -> {
-            MutableLiveData<User> result = new MutableLiveData<>();
-            executorService.execute(() -> {
-                User user = userRepository.login(credentials.email, credentials.password);
-                if (user != null) {
-                    userRepository.saveLoginSession(user);
-                    _toastMessage.postValue("Đăng nhập thành công!"); // THÊM DÒNG NÀY
-                    result.postValue(user);
-                } else {
-                    _toastMessage.postValue("Email hoặc mật khẩu không chính xác.");
-                    result.postValue(null);
+    private void checkCurrentUser() {
+        if (userRepository.isLoggedIn()) {
+            int userId = userRepository.getCurrentUserId();
+            LiveData<User> userSource = userRepository.getUserById(userId);
+            // Observe the user data and update our own LiveData
+            // Use a temporary observer to get the value
+            userSource.observeForever(new Observer<User>() {
+                @Override
+                public void onChanged(User user) {
+                    if (user != null) {
+                        _loggedInUser.setValue(user);
+                        userSource.removeObserver(this); // Clean up the observer
+                    }
                 }
             });
-            return result;
-        });
+        }
     }
 
     public void register(String fullName, String email, String password) {
-        if (!ValidationUtil.isEmailValid(email)) {
-            _toastMessage.setValue("Invalid email address.");
-            return;
-        }
-        if (!ValidationUtil.isPasswordValid(password)) {
-            _toastMessage.setValue("Password must be at least 6 characters long.");
-            return;
-        }
-        if (fullName.isEmpty()) {
-            _toastMessage.setValue("Full name cannot be empty.");
-            return;
-        }
-
+        // ... validation ...
         User newUser = new User(fullName, email, password);
         userRepository.register(newUser);
         _toastMessage.setValue("Đăng ký thành công!");
     }
 
-    public void login(String email, String password) {
-        if (!ValidationUtil.isEmailValid(email)) {
-            _toastMessage.setValue("Invalid email address.");
+    public void login(String email, String password, boolean isRememberMeChecked) {
+        if (!ValidationUtil.isEmailValid(email) || password.isEmpty()) {
+            _toastMessage.setValue("Vui lòng kiểm tra lại email và mật khẩu.");
             return;
         }
-        if (password.isEmpty()) {
-            _toastMessage.setValue("Password cannot be empty.");
-            return;
-        }
-        loginRequest.setValue(new LoginCredentials(email, password));
+
+        executorService.execute(() -> {
+            User user = userRepository.login(email, password);
+            if (user != null) {
+                if (isRememberMeChecked) {
+                    userRepository.saveLoginSession(user);
+                } else {
+                    userRepository.clearLoginSession();
+                }
+                _toastMessage.postValue("Đăng nhập thành công!");
+                _loggedInUser.postValue(user);
+            } else {
+                _toastMessage.postValue("Email hoặc mật khẩu không chính xác.");
+            }
+        });
     }
 
     public void logout() {
         userRepository.clearLoginSession();
+        _loggedInUser.setValue(null);
+    }
+    
+    public boolean isUserLoggedIn() {
+        return userRepository.isLoggedIn();
     }
 
     public void doneShowingToast() {

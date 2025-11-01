@@ -57,7 +57,7 @@ public class AuthViewModelComponentTest {
         assertTrue(userId > 0);
 
         // Act
-        authViewModel.login("test@example.com", "password");
+        authViewModel.login("test@example.com", "password", false);
         
         // Assert: LiveData bây giờ sẽ được cập nhật một cách đáng tin cậy
         User loggedInUser = LiveDataTestUtil.getOrAwaitValue(authViewModel.loggedInUser);

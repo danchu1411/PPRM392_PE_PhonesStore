@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ public class LoginFragment extends Fragment {
     private AuthViewModel authViewModel;
     private EditText editTextEmail;
     private EditText editTextPassword;
+    private CheckBox checkBoxRememberMe;
     private Button buttonLogin;
     private TextView textViewRegister;
 
@@ -40,13 +42,18 @@ public class LoginFragment extends Fragment {
         
         editTextEmail = view.findViewById(R.id.editTextEmail);
         editTextPassword = view.findViewById(R.id.editTextPassword);
+        checkBoxRememberMe = view.findViewById(R.id.checkBoxRememberMe);
         buttonLogin = view.findViewById(R.id.buttonLogin);
         textViewRegister = view.findViewById(R.id.textViewRegister);
+
+        // Không cần load credentials nữa
 
         buttonLogin.setOnClickListener(v -> {
             String email = editTextEmail.getText().toString().trim();
             String password = editTextPassword.getText().toString().trim();
-            authViewModel.login(email, password);
+            boolean isChecked = checkBoxRememberMe.isChecked();
+            
+            authViewModel.login(email, password, isChecked);
         });
 
         textViewRegister.setOnClickListener(v -> {
@@ -57,7 +64,6 @@ public class LoginFragment extends Fragment {
         authViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.isEmpty()) {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                // Sau khi hiển thị, báo cho ViewModel biết
                 authViewModel.doneShowingToast();
             }
         });
