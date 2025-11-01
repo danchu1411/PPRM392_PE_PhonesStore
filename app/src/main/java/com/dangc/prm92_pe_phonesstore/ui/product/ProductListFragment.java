@@ -2,6 +2,7 @@ package com.dangc.prm92_pe_phonesstore.ui.product;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ProductListFragment extends Fragment {
+
+    private static final String TAG = "ProductListFragment";
 
     private ProductViewModel productViewModel;
     private AuthViewModel authViewModel;
@@ -61,13 +64,17 @@ public class ProductListFragment extends Fragment {
 
         setupMenu();
         
-        productViewModel.products.observe(getViewLifecycleOwner(), products -> {
+        productViewModel.products.observe(getViewLevelogger(), products -> {
             progressBar.setVisibility(View.GONE);
-            if (products != null && !products.isEmpty()) {
-                textViewEmpty.setVisibility(View.GONE);
-                adapter.submitList(products);
-            } else {
+            
+            // Luôn cập nhật danh sách cho adapter. 
+            // Nếu products là null hoặc rỗng, submitList sẽ xóa RecyclerView.
+            adapter.submitList(products);
+
+            if (products == null || products.isEmpty()) {
                 textViewEmpty.setVisibility(View.VISIBLE);
+            } else {
+                textViewEmpty.setVisibility(View.GONE);
             }
         });
 
@@ -77,8 +84,11 @@ public class ProductListFragment extends Fragment {
         });
 
         adapter.setOnItemClickListener(product -> {
+            int idToSend = product.getProductId();
+            Log.d(TAG, "Navigating with productId: " + idToSend);
+
             Bundle bundle = new Bundle();
-            bundle.putInt("productId", product.getProductId());
+            bundle.putInt("productId", idToSend);
             Navigation.findNavController(view).navigate(R.id.action_productListFragment_to_productDetailFragment, bundle);
         });
 
