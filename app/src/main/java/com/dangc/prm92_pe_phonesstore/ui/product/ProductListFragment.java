@@ -1,24 +1,30 @@
 package com.dangc.prm92_pe_phonesstore.ui.product;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dangc.prm92_pe_phonesstore.R;
+import com.dangc.prm92_pe_phonesstore.ui.auth.AuthActivity;
+import com.dangc.prm92_pe_phonesstore.viewmodel.AuthViewModel;
 import com.dangc.prm92_pe_phonesstore.viewmodel.ProductViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ProductListFragment extends Fragment {
 
     private ProductViewModel productViewModel;
+    private AuthViewModel authViewModel; // Thêm AuthViewModel
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
     private ProgressBar progressBar;
@@ -45,10 +51,12 @@ public class ProductListFragment extends Fragment {
         adapter = new ProductAdapter();
         recyclerView.setAdapter(adapter);
 
-        // Lấy ViewModel
+        // Lấy ViewModels
         productViewModel = new ViewModelProvider(this).get(ProductViewModel.class);
+        // Lấy AuthViewModel từ scope của Activity
+        authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        // Quan sát dữ liệu sản phẩm từ ViewModel
+        // Quan sát dữ liệu sản phẩm
         productViewModel.products.observe(getViewLifecycleOwner(), products -> {
             progressBar.setVisibility(View.GONE);
             if (products != null && !products.isEmpty()) {
@@ -63,5 +71,30 @@ public class ProductListFragment extends Fragment {
         fabAddProduct.setOnClickListener(v -> {
             // TODO: Điều hướng đến màn hình AddEditProductFragment
         });
+
+        // Xử lý nút Back
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                showLogoutConfirmationDialog();
+            }
+        });
+    }
+
+    private void showLogoutConfirmationDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Confirm Logout")
+                .setMessage("Are you sure you want to return to the login screen?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Xử lý đăng xuất và điều hướng
+                    authViewModel.logout();
+                    Intent intent = new Intent(getActivity(), AuthActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
     }
 }
