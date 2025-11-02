@@ -1,8 +1,9 @@
 package com.dangc.prm92_pe_phonesstore.ui.product;
 
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +29,7 @@ import com.dangc.prm92_pe_phonesstore.ui.auth.AuthActivity;
 import com.dangc.prm92_pe_phonesstore.viewmodel.AuthViewModel;
 import com.dangc.prm92_pe_phonesstore.viewmodel.CartViewModel;
 import com.dangc.prm92_pe_phonesstore.viewmodel.ProductViewModel;
-import com.google.android.material.appbar.MaterialToolbar;
+// XÓA DÒNG NÀY: import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ProductListFragment extends Fragment implements ProductAdapter.OnProductActionClickListener {
@@ -43,7 +44,13 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
     private ProgressBar progressBar;
     private TextView textViewEmpty;
     private FloatingActionButton fabAddProduct;
-    private MaterialToolbar toolbar;
+    // XÓA DÒNG NÀY: private MaterialToolbar toolbar;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true); // Báo cho hệ thống biết fragment này muốn thêm item vào menu
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +65,7 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         progressBar = view.findViewById(R.id.progressBar);
         textViewEmpty = view.findViewById(R.id.textViewEmpty);
         fabAddProduct = view.findViewById(R.id.fabAddProduct);
-        toolbar = view.findViewById(R.id.toolbar);
+        // XÓA DÒNG NÀY: toolbar = view.findViewById(R.id.toolbar); // Toolbar giờ thuộc về Activity
 
         adapter = new ProductAdapter();
         recyclerView.setAdapter(adapter);
@@ -68,7 +75,7 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
-        setupMenu();
+        // XÓA DÒNG NÀY: setupMenu(); // Không cần gọi setupMenu() nữa
 
         productViewModel.products.observe(getViewLifecycleOwner(), products -> {
             progressBar.setVisibility(View.GONE);
@@ -82,7 +89,10 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
 
         fabAddProduct.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(v);
-            navController.navigate(R.id.action_productListFragment_to_addEditProductFragment);
+            // Điều hướng đến Add/Edit với productId là -1 (chế độ Add)
+            Bundle bundle = new Bundle();
+            bundle.putInt("productId", -1);
+            navController.navigate(R.id.action_productListFragment_to_addEditProductFragment, bundle);
         });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
@@ -93,23 +103,13 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         });
     }
 
-    private void setupMenu() {
-        toolbar.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.action_sort) {
-                productViewModel.toggleSortOrder();
-                return true;
-            } else if (itemId == R.id.action_view_cart) {
-                Navigation.findNavController(getView()).navigate(R.id.action_productListFragment_to_cartFragment);
-                return true;
-            } else if (itemId == R.id.action_view_revenue) {
-                Navigation.findNavController(getView()).navigate(R.id.action_productListFragment_to_revenueFragment);
-                return true;
-            }
-            return false;
-        });
+    // PHƯƠNG THỨC NÀY SẼ TỰ ĐỘNG KẾT NỐI VỚI TOOLBAR CỦA ACTIVITY
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main_menu, menu); // Thổi phồng menu vào Toolbar của MainActivity
 
-        MenuItem searchItem = toolbar.getMenu().findItem(R.id.action_search);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -125,13 +125,35 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         });
     }
 
+    // PHƯƠNG THỨC NÀY SẼ XỬ LÝ CÁC LỰA CHỌN TRONG MENU
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        NavController navController = Navigation.findNavController(requireView()); // Nên dùng requireView()
+
+        if (itemId == R.id.action_sort) {
+            productViewModel.toggleSortOrder();
+            return true;
+        } else if (itemId == R.id.action_view_cart) {
+            navController.navigate(R.id.action_productListFragment_to_cartFragment);
+            return true;
+        } else if (itemId == R.id.action_view_revenue) {
+            navController.navigate(R.id.action_productListFragment_to_revenueFragment);
+            return true;
+        } else if (itemId == R.id.action_view_logout) {
+            showLogoutConfirmationDialog();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void showLogoutConfirmationDialog() {
-        new AlertDialog.Builder(getContext())
+        new AlertDialog.Builder(requireContext())
                 .setTitle("Confirm Logout")
                 .setMessage("Are you sure you want to return to the login screen?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     authViewModel.logout();
-                    Intent intent = new Intent(getActivity(), AuthActivity.class);
+                    Intent intent = new Intent(requireActivity(), AuthActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     requireActivity().finish();
@@ -145,7 +167,7 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
     public void onProductClick(Product product) {
         Bundle bundle = new Bundle();
         bundle.putInt("productId", product.getProductId());
-        Navigation.findNavController(getView()).navigate(R.id.action_productListFragment_to_productDetailFragment, bundle);
+        Navigation.findNavController(requireView()).navigate(R.id.action_productListFragment_to_productDetailFragment, bundle);
     }
 
     @Override
@@ -158,7 +180,7 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
     public void onEditClick(Product product) {
         Bundle bundle = new Bundle();
         bundle.putInt("productId", product.getProductId());
-        Navigation.findNavController(getView()).navigate(R.id.action_productListFragment_to_addEditProductFragment, bundle);
+        Navigation.findNavController(requireView()).navigate(R.id.action_productListFragment_to_addEditProductFragment, bundle);
     }
 
     @Override

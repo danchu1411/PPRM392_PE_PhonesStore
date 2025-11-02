@@ -25,8 +25,6 @@ public class AddEditProductFragment extends Fragment {
     private ProductViewModel productViewModel;
     private TextInputEditText editTextModelName, editTextBrand, editTextDescription, editTextPrice, editTextImageUrl;
     private Button buttonSave;
-    private MaterialToolbar toolbar;
-
     private int currentProductId = -1;
     private Product currentProduct = null;
 
@@ -49,8 +47,6 @@ public class AddEditProductFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
-
-        toolbar = view.findViewById(R.id.toolbar);
         editTextModelName = view.findViewById(R.id.editTextModelName);
         editTextBrand = view.findViewById(R.id.editTextBrand);
         editTextDescription = view.findViewById(R.id.editTextDescription);
@@ -58,12 +54,11 @@ public class AddEditProductFragment extends Fragment {
         editTextImageUrl = view.findViewById(R.id.editTextImageUrl);
         buttonSave = view.findViewById(R.id.buttonSave);
 
-        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).navigateUp());
         buttonSave.setOnClickListener(v -> saveProduct());
 
         if (currentProductId != -1) {
             // Chế độ Edit
-            toolbar.setTitle("Edit Product");
+            requireActivity().setTitle("Edit Product");
             productViewModel.getProductById(currentProductId).observe(getViewLifecycleOwner(), product -> {
                 if (product != null) {
                     currentProduct = product;
@@ -76,7 +71,7 @@ public class AddEditProductFragment extends Fragment {
             });
         } else {
             // Chế độ Add
-            toolbar.setTitle("Add Product");
+            requireActivity().setTitle("Add Product");
         }
     }
 

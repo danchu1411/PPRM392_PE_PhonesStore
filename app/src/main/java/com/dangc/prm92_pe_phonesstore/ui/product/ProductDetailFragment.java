@@ -27,7 +27,6 @@ public class ProductDetailFragment extends Fragment {
     private ImageView imageViewProductDetail;
     private TextView labelModelName, labelBrand, labelPrice, labelDescription;
     private TextView textViewNameDetail, textViewBrandDetail, textViewPriceDetail, textViewDescriptionDetail;
-    private MaterialToolbar toolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +47,6 @@ public class ProductDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Khởi tạo Views
-        toolbar = view.findViewById(R.id.toolbar);
         imageViewProductDetail = view.findViewById(R.id.imageViewProductDetail);
         labelModelName = view.findViewById(R.id.labelModelName);
         labelBrand = view.findViewById(R.id.labelBrand);
@@ -59,18 +57,13 @@ public class ProductDetailFragment extends Fragment {
         textViewPriceDetail = view.findViewById(R.id.textViewPriceDetail);
         textViewDescriptionDetail = view.findViewById(R.id.textViewDescriptionDetail);
 
-        // Thiết lập sự kiện cho Toolbar
-        toolbar.setNavigationOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
-        });
-
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
 
         if (productId != -1) {
             productViewModel.getProductById(productId).observe(getViewLifecycleOwner(), product -> {
                 if (product != null) {
                     // Cập nhật tiêu đề Toolbar với tên sản phẩm
-                    toolbar.setTitle(product.getModelName());
+                    requireActivity().setTitle(product.getModelName());
                     
                     textViewNameDetail.setText(product.getModelName());
                     textViewBrandDetail.setText(product.getBrand());
