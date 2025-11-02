@@ -15,4 +15,15 @@
         android:title="Sort by Price"
         app:showAsAction="ifRoom" />
 
+    <!-- Menu ba chấm -->
+    <item
+        android:id="@+id/action_view_cart"
+        android:title="View Cart"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_view_revenue"
+        android:title="View Revenue"
+        app:showAsAction="never" />
+
 </menu>

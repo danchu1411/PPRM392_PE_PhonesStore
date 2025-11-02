@@ -16,6 +16,13 @@
         <action
             android:id="@+id/action_productListFragment_to_productDetailFragment"
             app:destination="@id/productDetailFragment" />
+        <!-- Thêm các action điều hướng cho menu -->
+        <action
+            android:id="@+id/action_productListFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_revenueFragment"
+            app:destination="@id/revenueFragment" />
     </fragment>
 
     <fragment
@@ -39,6 +46,16 @@
             app:argType="integer" />
     </fragment>
 
-    <!-- Các fragment khác có thể được thêm vào đây -->
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.cart.CartFragment"
+        android:label="Shopping Cart"
+        tools:layout="@layout/fragment_cart" />
+
+    <fragment
+        android:id="@+id/revenueFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.revenue.RevenueFragment"
+        android:label="Revenue"
+        tools:layout="@layout/fragment_revenue" />
 
 </navigation>
