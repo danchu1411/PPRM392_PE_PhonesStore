@@ -37,7 +37,7 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
 
     private ProductViewModel productViewModel;
     private AuthViewModel authViewModel;
-    private CartViewModel cartViewModel; // Thêm CartViewModel
+    private CartViewModel cartViewModel;
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
     private ProgressBar progressBar;
@@ -62,9 +62,8 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
 
         adapter = new ProductAdapter();
         recyclerView.setAdapter(adapter);
-        adapter.setOnProductActionClickListener(this); // Set listener
+        adapter.setOnProductActionClickListener(this);
 
-        // Khởi tạo các ViewModels
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
@@ -95,14 +94,45 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
     }
 
     private void setupMenu() {
-        // ... (code setupMenu không đổi)
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_sort) {
+                productViewModel.toggleSortOrder();
+                return true;
+            }
+            return false;
+        });
+
+        MenuItem searchItem = toolbar.getMenu().findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                productViewModel.searchProducts(newText);
+                return true;
+            }
+        });
     }
 
     private void showLogoutConfirmationDialog() {
-        // ... (code showLogoutConfirmationDialog không đổi)
+        new AlertDialog.Builder(getContext())
+                .setTitle("Confirm Logout")
+                .setMessage("Are you sure you want to return to the login screen?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    authViewModel.logout();
+                    Intent intent = new Intent(getActivity(), AuthActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                })
+                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
     }
-
-    // --- Implement các phương thức của Interface ---
 
     @Override
     public void onProductClick(Product product) {

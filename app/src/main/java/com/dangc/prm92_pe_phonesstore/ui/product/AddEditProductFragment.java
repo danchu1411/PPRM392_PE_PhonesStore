@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.dangc.prm92_pe_phonesstore.R;
@@ -26,7 +25,18 @@ public class AddEditProductFragment extends Fragment {
     private ProductViewModel productViewModel;
     private TextInputEditText editTextModelName, editTextBrand, editTextDescription, editTextPrice, editTextImageUrl;
     private Button buttonSave;
-    private MaterialToolbar toolbar; // Thêm Toolbar
+    private MaterialToolbar toolbar;
+
+    private int currentProductId = -1;
+    private Product currentProduct = null;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            currentProductId = getArguments().getInt("productId", -1);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,11 +58,26 @@ public class AddEditProductFragment extends Fragment {
         editTextImageUrl = view.findViewById(R.id.editTextImageUrl);
         buttonSave = view.findViewById(R.id.buttonSave);
 
-        toolbar.setNavigationOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
-        });
-
+        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).navigateUp());
         buttonSave.setOnClickListener(v -> saveProduct());
+
+        if (currentProductId != -1) {
+            // Chế độ Edit
+            toolbar.setTitle("Edit Product");
+            productViewModel.getProductById(currentProductId).observe(getViewLifecycleOwner(), product -> {
+                if (product != null) {
+                    currentProduct = product;
+                    editTextModelName.setText(product.getModelName());
+                    editTextBrand.setText(product.getBrand());
+                    editTextDescription.setText(product.getDescription());
+                    editTextPrice.setText(String.valueOf(product.getPrice()));
+                    editTextImageUrl.setText(product.getImageUrl());
+                }
+            });
+        } else {
+            // Chế độ Add
+            toolbar.setTitle("Add Product");
+        }
     }
 
     private void saveProduct() {
@@ -67,18 +92,24 @@ public class AddEditProductFragment extends Fragment {
             return;
         }
 
-        double price;
-        try {
-            price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(getContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show();
-            return;
+        double price = Double.parseDouble(priceStr);
+
+        if (currentProductId != -1 && currentProduct != null) {
+            // Update
+            currentProduct.setModelName(modelName);
+            currentProduct.setBrand(brand);
+            currentProduct.setDescription(description);
+            currentProduct.setPrice(price);
+            currentProduct.setImageUrl(imageUrl);
+            productViewModel.update(currentProduct);
+            Toast.makeText(getContext(), "Product updated", Toast.LENGTH_SHORT).show();
+        } else {
+            // Insert
+            Product newProduct = new Product(modelName, brand, description, price, imageUrl);
+            productViewModel.insert(newProduct);
+            Toast.makeText(getContext(), "Product added", Toast.LENGTH_SHORT).show();
         }
-        
-        Product newProduct = new Product(modelName, brand, description, price, imageUrl);
-        productViewModel.insert(newProduct);
-        
-        Toast.makeText(getContext(), "Product saved successfully", Toast.LENGTH_SHORT).show();
+
         Navigation.findNavController(getView()).navigateUp();
     }
 }
