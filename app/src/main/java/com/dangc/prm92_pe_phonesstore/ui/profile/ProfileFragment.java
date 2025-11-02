@@ -64,7 +64,19 @@ public class ProfileFragment extends Fragment {
         });
 
         buttonSaveProfile.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Button clicked", Toast.LENGTH_SHORT).show();
+            if (currentUser == null) {
+                Toast.makeText(getContext(), "User data not available!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String fullName = editTextFullName.getText().toString().trim();
+            String currentPassword = editTextCurrentPassword.getText().toString().trim();
+            String newPassword = editTextNewPassword.getText().toString().trim();
+            String confirmNewPassword = editTextConfirmNewPassword.getText().toString().trim();
+
+            currentUser.setFullName(fullName);
+            authViewModel.updateUser(currentUser, currentPassword, newPassword, confirmNewPassword);
+
             Navigation.findNavController(view).navigateUp();
         });
     }

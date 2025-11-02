@@ -116,6 +116,38 @@ public class AuthViewModel extends AndroidViewModel {
         });
     }
 
+    public void updateUser(User userToUpdate, String currentPassword, String newPassword, String confirmPassword) {
+        executorService.execute(() -> {
+            User existingUser = userRepository.login(userToUpdate.getEmail(), currentPassword);
+            // Check if the current password is correct
+            if(existingUser == null) {
+                _toastMessage.postValue("Current password is incorrect.");
+                return;
+            }
+            // Check if the new password is valid
+            if(!newPassword.isEmpty()) {
+                if(!newPassword.equals(confirmPassword)) {
+                    _toastMessage.postValue("New password and confirm password do not match.");
+                    return;
+                }
+                if(!ValidationUtil.isPasswordValid(newPassword)) {
+                    _toastMessage.postValue("New password must be at least 6 characters long.");
+                    return;
+                }
+                userToUpdate.setPassword(newPassword);
+            } else {
+                userToUpdate.setPassword(currentPassword);
+            }
+            // Check if the email is valid
+            if(!userToUpdate.getFullName().isEmpty()) {
+                userToUpdate.setFullName(userToUpdate.getFullName());
+            }
+            // Update the user
+            userRepository.updateUser(userToUpdate);
+            _toastMessage.postValue("Update successfully!");
+        });
+    }
+
     public void logout() {
         userRepository.clearLoginSession();
         _loggedInUser.setValue(null);

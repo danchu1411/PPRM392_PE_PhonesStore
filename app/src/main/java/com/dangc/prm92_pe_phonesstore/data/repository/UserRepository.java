@@ -21,7 +21,7 @@ public class UserRepository {
         this.databaseWriteExecutor = executorService;
     }
 
-    // --- Database Operations ---
+    // Database Operations
     public void register(User user) {
         databaseWriteExecutor.execute(() -> userDao.insert(user));
     }
@@ -29,12 +29,16 @@ public class UserRepository {
     public User login(String email, String password) {
         return userDao.findByEmailAndPassword(email, password);
     }
+
+    public void updateUser(User user) {
+        databaseWriteExecutor.execute(() -> userDao.update(user));
+    }
     
     public LiveData<User> getUserById(int userId) {
         return userDao.getUserById(userId);
     }
 
-    // --- Session (SharedPreferences) Operations ---
+    // Session (SharedPreferences) Operations
     public void saveLoginSession(User user) {
         if (user != null) {
             userPreferences.saveCurrentUser(user.getUserId());

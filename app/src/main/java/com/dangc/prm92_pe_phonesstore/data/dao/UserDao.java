@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
 
@@ -22,4 +23,7 @@ public interface UserDao {
     
     @Query("SELECT * FROM users WHERE user_id = :userId LIMIT 1")
     LiveData<User> getUserById(int userId);
+
+    @Update
+    void update(User user);
 }
