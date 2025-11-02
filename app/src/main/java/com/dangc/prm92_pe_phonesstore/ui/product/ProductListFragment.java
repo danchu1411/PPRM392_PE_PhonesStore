@@ -64,11 +64,9 @@ public class ProductListFragment extends Fragment {
 
         setupMenu();
         
-        productViewModel.products.observe(getViewLevelogger(), products -> {
+        productViewModel.products.observe(getViewLifecycleOwner(), products -> {
             progressBar.setVisibility(View.GONE);
             
-            // Luôn cập nhật danh sách cho adapter. 
-            // Nếu products là null hoặc rỗng, submitList sẽ xóa RecyclerView.
             adapter.submitList(products);
 
             if (products == null || products.isEmpty()) {
