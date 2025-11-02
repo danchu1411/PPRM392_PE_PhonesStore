@@ -3,6 +3,7 @@ package com.dangc.prm92_pe_phonesstore.ui.product;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -16,7 +17,7 @@ import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 
 public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductViewHolder> {
 
-    private OnItemClickListener listener;
+    private OnProductActionClickListener listener;
 
     public ProductAdapter() {
         super(DIFF_CALLBACK);
@@ -58,10 +59,9 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
     }
 
     class ProductViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textViewName;
-        private final TextView textViewBrand;
-        private final TextView textViewPrice;
+        private final TextView textViewName, textViewBrand, textViewPrice;
         private final ImageView imageViewProduct;
+        private final ImageButton buttonAddToCart, buttonEdit, buttonDelete;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,21 +69,51 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
             textViewBrand = itemView.findViewById(R.id.textViewBrand);
             textViewPrice = itemView.findViewById(R.id.textViewPrice);
             imageViewProduct = itemView.findViewById(R.id.imageViewProduct);
+            buttonAddToCart = itemView.findViewById(R.id.buttonAddToCart);
+            buttonEdit = itemView.findViewById(R.id.buttonEdit);
+            buttonDelete = itemView.findViewById(R.id.buttonDelete);
 
+            // Listener cho cả item view (để xem chi tiết)
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
-                    listener.onItemClick(getItem(position));
+                    listener.onProductClick(getItem(position));
+                }
+            });
+
+            // Listeners cho các nút hành động
+            buttonAddToCart.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onAddToCartClick(getItem(position));
+                }
+            });
+
+            buttonEdit.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onEditClick(getItem(position));
+                }
+            });
+
+            buttonDelete.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onDeleteClick(getItem(position));
                 }
             });
         }
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(Product product);
+    // Interface mới cho tất cả các hành động
+    public interface OnProductActionClickListener {
+        void onProductClick(Product product); // Click vào item để xem chi tiết
+        void onAddToCartClick(Product product);
+        void onEditClick(Product product);
+        void onDeleteClick(Product product);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setOnProductActionClickListener(OnProductActionClickListener listener) {
         this.listener = listener;
     }
 }
