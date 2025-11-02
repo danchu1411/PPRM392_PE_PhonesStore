@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_productListFragment_to_addEditProductFragment"
             app:destination="@id/addEditProductFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
     </fragment>
 
     <fragment
@@ -23,9 +26,19 @@
         <argument
             android:name="productId"
             app:argType="integer"
-            app:defaultValue="-1" />
+            android:defaultValue="-1" />
     </fragment>
 
-    <!-- Các fragment khác không thay đổi -->
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.product.ProductDetailFragment"
+        android:label="Product Details"
+        tools:layout="@layout/fragment_product_detail" >
+        <argument
+            android:name="productId"
+            app:argType="integer" />
+    </fragment>
+
+    <!-- Các fragment khác có thể được thêm vào đây -->
 
 </navigation>
