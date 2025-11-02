@@ -108,10 +108,10 @@ public class AuthViewModel extends AndroidViewModel {
                 } else {
                     userRepository.clearLoginSession();
                 }
-                _toastMessage.postValue("Đăng nhập thành công!");
+                _toastMessage.postValue("Login successfully!");
                 _loggedInUser.postValue(user);
             } else {
-                _toastMessage.postValue("Email hoặc mật khẩu không chính xác.");
+                _toastMessage.postValue("Login failed. Please check your credentials.");
             }
         });
     }
