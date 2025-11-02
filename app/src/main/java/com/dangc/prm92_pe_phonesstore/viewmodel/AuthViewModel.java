@@ -84,8 +84,19 @@ public class AuthViewModel extends AndroidViewModel {
     }
 
     public void login(String email, String password, boolean isRememberMeChecked) {
-        if (!ValidationUtil.isEmailValid(email) || password.isEmpty()) {
-            _toastMessage.setValue("Vui lòng kiểm tra lại email và mật khẩu.");
+        // Make sure all fields have value
+        if (email.isEmpty() || password.isEmpty()) {
+            _toastMessage.setValue("Please fill in all fields.");
+            return;
+        }
+        // Check email format
+        if (!ValidationUtil.isEmailValid(email)) {
+            _toastMessage.setValue("Invalid email format.");
+            return;
+        }
+        // Check password length
+        if (!ValidationUtil.isPasswordValid(password)) {
+            _toastMessage.setValue("Password must be at least 6 characters long.");
             return;
         }
 
