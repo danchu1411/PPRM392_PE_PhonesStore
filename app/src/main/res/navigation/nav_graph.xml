@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_productListFragment_to_revenueFragment"
             app:destination="@id/revenueFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <fragment
@@ -57,5 +60,11 @@
         android:name="com.dangc.prm92_pe_phonesstore.ui.revenue.RevenueFragment"
         android:label="Revenue"
         tools:layout="@layout/fragment_revenue" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.dangc.prm92_pe_phonesstore.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
 
 </navigation>

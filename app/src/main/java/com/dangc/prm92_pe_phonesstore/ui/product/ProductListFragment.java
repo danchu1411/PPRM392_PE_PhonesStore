@@ -49,7 +49,7 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true); // Báo cho hệ thống biết fragment này muốn thêm item vào menu
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -65,7 +65,6 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         progressBar = view.findViewById(R.id.progressBar);
         textViewEmpty = view.findViewById(R.id.textViewEmpty);
         fabAddProduct = view.findViewById(R.id.fabAddProduct);
-        // XÓA DÒNG NÀY: toolbar = view.findViewById(R.id.toolbar); // Toolbar giờ thuộc về Activity
 
         adapter = new ProductAdapter();
         recyclerView.setAdapter(adapter);
@@ -74,8 +73,6 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
-
-        // XÓA DÒNG NÀY: setupMenu(); // Không cần gọi setupMenu() nữa
 
         productViewModel.products.observe(getViewLifecycleOwner(), products -> {
             progressBar.setVisibility(View.GONE);
@@ -89,7 +86,6 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
 
         fabAddProduct.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(v);
-            // Điều hướng đến Add/Edit với productId là -1 (chế độ Add)
             Bundle bundle = new Bundle();
             bundle.putInt("productId", -1);
             navController.navigate(R.id.action_productListFragment_to_addEditProductFragment, bundle);
@@ -103,11 +99,10 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         });
     }
 
-    // PHƯƠNG THỨC NÀY SẼ TỰ ĐỘNG KẾT NỐI VỚI TOOLBAR CỦA ACTIVITY
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.main_menu, menu); // Thổi phồng menu vào Toolbar của MainActivity
+        inflater.inflate(R.menu.main_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
@@ -125,11 +120,10 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         });
     }
 
-    // PHƯƠNG THỨC NÀY SẼ XỬ LÝ CÁC LỰA CHỌN TRONG MENU
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-        NavController navController = Navigation.findNavController(requireView()); // Nên dùng requireView()
+        NavController navController = Navigation.findNavController(requireView());
 
         if (itemId == R.id.action_sort) {
             productViewModel.toggleSortOrder();
@@ -142,6 +136,9 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
             return true;
         } else if (itemId == R.id.action_view_logout) {
             showLogoutConfirmationDialog();
+            return true;
+        } else if(itemId == R.id.action_view_profile) {
+            navController.navigate(R.id.action_productListFragment_to_profileFragment);
             return true;
         }
         return super.onOptionsItemSelected(item);
