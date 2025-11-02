@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.PRM392_PE_PhonesStore" parent="Base.Theme.PRM392_PE_PhonesStore" />
+
+    <!-- Thêm theme mới cho AuthActivity -->
+    <style name="Theme.PRM392_PE_PhonesStore.Auth" parent="Theme.PRM392_PE_PhonesStore">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

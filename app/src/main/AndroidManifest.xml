@@ -15,16 +15,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PRM392_PE_PhonesStore">
 
+        <!-- AuthActivity sẽ là điểm khởi đầu -->
         <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.PRM392_PE_PhonesStore.Auth">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- MainActivity là màn hình chính sau khi đăng nhập -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="false" />
