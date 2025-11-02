@@ -36,6 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:scaleType="fitCenter"
+                android:layout_marginTop="30dp"
                 tools:src="@tools:sample/backgrounds/scenic" />
 
             <LinearLayout
