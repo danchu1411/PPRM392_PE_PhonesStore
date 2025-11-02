@@ -98,16 +98,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/buttonCancel"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="Cancel" />
-
                 <Button
                     android:id="@+id/buttonSave"
                     android:layout_width="0dp"
@@ -115,7 +105,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:text="Save Product" />
-
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -26,7 +26,6 @@ public class AddEditProductFragment extends Fragment {
     private ProductViewModel productViewModel;
     private TextInputEditText editTextModelName, editTextBrand, editTextDescription, editTextPrice, editTextImageUrl;
     private Button buttonSave;
-    private Button buttonCancel;
     private MaterialToolbar toolbar; // Thêm Toolbar
 
     @Override
@@ -48,18 +47,12 @@ public class AddEditProductFragment extends Fragment {
         editTextPrice = view.findViewById(R.id.editTextPrice);
         editTextImageUrl = view.findViewById(R.id.editTextImageUrl);
         buttonSave = view.findViewById(R.id.buttonSave);
-        buttonCancel = view.findViewById(R.id.buttonCancel);
 
-        // Xử lý nút back trên toolbar
         toolbar.setNavigationOnClickListener(v -> {
             Navigation.findNavController(v).navigateUp();
         });
 
         buttonSave.setOnClickListener(v -> saveProduct());
-        
-        buttonCancel.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
-        });
     }
 
     private void saveProduct() {
