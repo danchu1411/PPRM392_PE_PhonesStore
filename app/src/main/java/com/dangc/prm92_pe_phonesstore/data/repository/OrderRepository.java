@@ -35,4 +35,16 @@ public class OrderRepository {
     public LiveData<Double> getTotalRevenue() {
         return orderDao.getTotalRevenue();
     }
+
+    public LiveData<Double> getDailyRevenue(String Date) {
+        return orderDao.getDailyRevenue(Date);
+    }
+
+    public LiveData<Double> getMonthlyRevenue(String Date) {
+        return orderDao.getMonthlyRevenue(Date);
+    }
+
+    public LiveData<Double> getYearlyRevenue(String Date) {
+        return orderDao.getYearlyRevenue(Date);
+    }
 }

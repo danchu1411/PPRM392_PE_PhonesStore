@@ -59,8 +59,7 @@ public class ProductViewModel extends AndroidViewModel {
             })
         );
     }
-    
-    // THÊM LẠI PHƯƠNG THỨC BỊ THIẾU
+
     public LiveData<Product> getProductById(int productId) {
         return productRepository.getProductById(productId);
     }
@@ -95,7 +94,6 @@ public class ProductViewModel extends AndroidViewModel {
     public void update(Product product) {
         productRepository.update(product);
     }
-    
     public void delete(Product product) {
         productRepository.delete(product);
     }
