@@ -126,26 +126,51 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
     }
 
     private void showLogoutConfirmationDialog() {
-        // ... (không đổi)
+        new AlertDialog.Builder(getContext())
+                .setTitle("Confirm Logout")
+                .setMessage("Are you sure you want to return to the login screen?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    authViewModel.logout();
+                    Intent intent = new Intent(getActivity(), AuthActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                })
+                .setNegativeButton("No", null)
+                .create()
+                .show();
     }
 
     @Override
     public void onProductClick(Product product) {
-        // ... (không đổi)
+        Bundle bundle = new Bundle();
+        bundle.putInt("productId", product.getProductId());
+        Navigation.findNavController(getView()).navigate(R.id.action_productListFragment_to_productDetailFragment, bundle);
     }
 
     @Override
     public void onAddToCartClick(Product product) {
-        // ... (không đổi)
+        cartViewModel.addProductToCart(product);
+        Toast.makeText(getContext(), "Added " + product.getModelName() + " to cart", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onEditClick(Product product) {
-        // ... (không đổi)
+        Bundle bundle = new Bundle();
+        bundle.putInt("productId", product.getProductId());
+        Navigation.findNavController(getView()).navigate(R.id.action_productListFragment_to_addEditProductFragment, bundle);
     }
 
     @Override
     public void onDeleteClick(Product product) {
-        // ... (không đổi)
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete Product")
+                .setMessage("Are you sure you want to delete " + product.getModelName() + "?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    productViewModel.delete(product);
+                    Toast.makeText(getContext(), product.getModelName() + " deleted", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

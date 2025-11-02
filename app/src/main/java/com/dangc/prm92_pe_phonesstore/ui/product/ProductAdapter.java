@@ -73,7 +73,7 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
             buttonEdit = itemView.findViewById(R.id.buttonEdit);
             buttonDelete = itemView.findViewById(R.id.buttonDelete);
 
-            // Listener cho cả item view (để xem chi tiết)
+            // Listener cho cả item view (để xem chi tiết) - ĐÃ ĐƯỢC THÊM LẠI
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -105,9 +105,8 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
         }
     }
 
-    // Interface mới cho tất cả các hành động
     public interface OnProductActionClickListener {
-        void onProductClick(Product product); // Click vào item để xem chi tiết
+        void onProductClick(Product product);
         void onAddToCartClick(Product product);
         void onEditClick(Product product);
         void onDeleteClick(Product product);
