@@ -12,10 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.dangc.prm92_pe_phonesstore.R;
 import com.dangc.prm92_pe_phonesstore.viewmodel.ProductViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
 
 public class ProductDetailFragment extends Fragment {
 
@@ -23,15 +25,9 @@ public class ProductDetailFragment extends Fragment {
     private int productId;
 
     private ImageView imageViewProductDetail;
-
-    // Các TextView cho nhãn
-    private TextView labelModelName;
-    private TextView labelBrand;
-    private TextView labelPrice;
-    private TextView labelDescription;
-
-    // Các TextView để hiển thị giá trị
+    private TextView labelModelName, labelBrand, labelPrice, labelDescription;
     private TextView textViewNameDetail, textViewBrandDetail, textViewPriceDetail, textViewDescriptionDetail;
+    private MaterialToolbar toolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,25 +47,31 @@ public class ProductDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Khởi tạo Views
+        toolbar = view.findViewById(R.id.toolbar);
         imageViewProductDetail = view.findViewById(R.id.imageViewProductDetail);
-
-        // Khởi tạo các TextView nhãn
         labelModelName = view.findViewById(R.id.labelModelName);
         labelBrand = view.findViewById(R.id.labelBrand);
         labelPrice = view.findViewById(R.id.labelPrice);
         labelDescription = view.findViewById(R.id.labelDescription);
-
-        // Khởi tạo các TextView hiển thị giá trị
         textViewNameDetail = view.findViewById(R.id.textViewNameDetail);
         textViewBrandDetail = view.findViewById(R.id.textViewBrandDetail);
         textViewPriceDetail = view.findViewById(R.id.textViewPriceDetail);
         textViewDescriptionDetail = view.findViewById(R.id.textViewDescriptionDetail);
+
+        // Thiết lập sự kiện cho Toolbar
+        toolbar.setNavigationOnClickListener(v -> {
+            Navigation.findNavController(v).navigateUp();
+        });
 
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
 
         if (productId != -1) {
             productViewModel.getProductById(productId).observe(getViewLifecycleOwner(), product -> {
                 if (product != null) {
+                    // Cập nhật tiêu đề Toolbar với tên sản phẩm
+                    toolbar.setTitle(product.getModelName());
+                    
                     textViewNameDetail.setText(product.getModelName());
                     textViewBrandDetail.setText(product.getBrand());
                     textViewPriceDetail.setText(String.format("$%.2f", product.getPrice()));
