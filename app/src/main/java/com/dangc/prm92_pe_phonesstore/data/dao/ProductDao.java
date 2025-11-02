@@ -24,7 +24,7 @@ public interface ProductDao {
     @Delete
     void delete(Product product);
 
-    @Query("SELECT * FROM products ORDER BY model_name ASC")
+    @Query("SELECT * FROM products ORDER BY product_id DESC") // Sắp xếp theo ID giảm dần
     LiveData<List<Product>> getAllProducts();
 
     @Query("SELECT * FROM products WHERE product_id = :productId")
