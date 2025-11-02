@@ -7,17 +7,14 @@
     android:orientation="vertical"
     tools:context=".ui.product.AddEditProductFragment">
 
-    <TextView
-        android:id="@+id/textViewTitle"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="Add/Edit Product"
-        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-        android:textColor="?attr/colorOnPrimary" />
+        app:title="Add/Edit Product"
+        app:titleTextColor="?attr/colorOnPrimary"
+        app:navigationIcon="@drawable/ic_arrow_back" />
 
     <ScrollView
         android:layout_width="match_parent"

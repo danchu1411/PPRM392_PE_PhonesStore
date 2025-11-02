@@ -18,6 +18,7 @@ import androidx.navigation.Navigation;
 import com.dangc.prm92_pe_phonesstore.R;
 import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 import com.dangc.prm92_pe_phonesstore.viewmodel.ProductViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class AddEditProductFragment extends Fragment {
@@ -25,7 +26,8 @@ public class AddEditProductFragment extends Fragment {
     private ProductViewModel productViewModel;
     private TextInputEditText editTextModelName, editTextBrand, editTextDescription, editTextPrice, editTextImageUrl;
     private Button buttonSave;
-    private Button buttonCancel; // Thêm nút Cancel
+    private Button buttonCancel;
+    private MaterialToolbar toolbar; // Thêm Toolbar
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,6 +41,7 @@ public class AddEditProductFragment extends Fragment {
 
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
 
+        toolbar = view.findViewById(R.id.toolbar);
         editTextModelName = view.findViewById(R.id.editTextModelName);
         editTextBrand = view.findViewById(R.id.editTextBrand);
         editTextDescription = view.findViewById(R.id.editTextDescription);
@@ -47,10 +50,14 @@ public class AddEditProductFragment extends Fragment {
         buttonSave = view.findViewById(R.id.buttonSave);
         buttonCancel = view.findViewById(R.id.buttonCancel);
 
+        // Xử lý nút back trên toolbar
+        toolbar.setNavigationOnClickListener(v -> {
+            Navigation.findNavController(v).navigateUp();
+        });
+
         buttonSave.setOnClickListener(v -> saveProduct());
         
         buttonCancel.setOnClickListener(v -> {
-            // Chỉ cần gọi navigateUp() để quay lại màn hình trước đó trong back stack
             Navigation.findNavController(v).navigateUp();
         });
     }
