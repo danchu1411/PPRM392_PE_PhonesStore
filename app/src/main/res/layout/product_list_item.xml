@@ -18,8 +18,7 @@
             android:layout_height="100dp"
             android:scaleType="fitCenter"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/avatars" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textViewName"
@@ -50,10 +49,44 @@
             android:layout_marginTop="8dp"
             android:textAppearance="?attr/textAppearanceHeadline5"
             android:textColor="?attr/colorPrimary"
-            app:layout_constraintEnd_toEndOf="@+id/textViewBrand"
             app:layout_constraintStart_toStartOf="@+id/textViewBrand"
             app:layout_constraintTop_toBottomOf="@+id/textViewBrand"
             tools:text="$999" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:id="@+id/action_buttons_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textViewPrice">
+
+            <ImageButton
+                android:id="@+id/buttonAddToCart"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_add_shopping_cart" />
+
+            <ImageButton
+                android:id="@+id/buttonEdit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_edit" />
+
+            <ImageButton
+                android:id="@+id/buttonDelete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_delete" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
