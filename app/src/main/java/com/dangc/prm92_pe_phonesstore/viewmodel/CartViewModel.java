@@ -46,18 +46,23 @@ public class CartViewModel extends AndroidViewModel {
     public void addProductToCart(Product product) {
         Map<Product, Integer> currentCart = _cartItems.getValue();
         if (currentCart == null) currentCart = new HashMap<>();
-        
-        int quantity = currentCart.containsKey(product) ? currentCart.get(product) + 1 : 1;
-        currentCart.put(product, quantity);
-        _cartItems.setValue(currentCart);
+
+        // TẠO MỘT MAP MỚI ĐỂ ĐẢM BẢO LiveData NHẬN RA SỰ THAY ĐỔI
+        Map<Product, Integer> newCart = new HashMap<>(currentCart);
+
+        int quantity = newCart.containsKey(product) ? newCart.get(product) + 1 : 1;
+        newCart.put(product, quantity);
+        _cartItems.setValue(newCart); // Đặt Map MỚI
         updateTotalPrice();
     }
 
     public void removeProductFromCart(Product product) {
         Map<Product, Integer> currentCart = _cartItems.getValue();
         if (currentCart != null && currentCart.containsKey(product)) {
-            currentCart.remove(product);
-            _cartItems.setValue(currentCart);
+            // TẠO MỘT MAP MỚI
+            Map<Product, Integer> newCart = new HashMap<>(currentCart);
+            newCart.remove(product);
+            _cartItems.setValue(newCart); // Đặt Map MỚI
             updateTotalPrice();
         }
     }
@@ -79,8 +84,26 @@ public class CartViewModel extends AndroidViewModel {
         }
 
         orderRepository.insertOrder(order, orderItems);
-        _cartItems.setValue(new HashMap<>());
+        _cartItems.setValue(new HashMap<>()); // Xóa giỏ hàng bằng một Map MỚI rỗng
         updateTotalPrice();
+    }
+
+    public void decreaseProductQuantity(Product product) {
+        Map<Product, Integer> currentCart = _cartItems.getValue();
+        if (currentCart == null) currentCart = new HashMap<>();
+
+        if (currentCart.containsKey(product)) {
+            // TẠO MỘT MAP MỚI
+            Map<Product, Integer> newCart = new HashMap<>(currentCart);
+            int quantity = newCart.get(product);
+            if (quantity > 1) {
+                newCart.put(product, quantity - 1);
+            } else {
+                newCart.remove(product);
+            }
+            _cartItems.setValue(newCart); // Đặt Map MỚI
+            updateTotalPrice();
+        }
     }
 
     private void updateTotalPrice() {

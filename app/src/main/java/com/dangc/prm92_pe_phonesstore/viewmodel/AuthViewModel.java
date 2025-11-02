@@ -44,18 +44,21 @@ public class AuthViewModel extends AndroidViewModel {
         checkCurrentUser();
     }
 
+    public int getCurrentUserId() {
+        return userRepository.getCurrentUserId();
+    }
+
+
     private void checkCurrentUser() {
         if (userRepository.isLoggedIn()) {
             int userId = userRepository.getCurrentUserId();
             LiveData<User> userSource = userRepository.getUserById(userId);
-            // Observe the user data and update our own LiveData
-            // Use a temporary observer to get the value
             userSource.observeForever(new Observer<User>() {
                 @Override
                 public void onChanged(User user) {
                     if (user != null) {
                         _loggedInUser.setValue(user);
-                        userSource.removeObserver(this); // Clean up the observer
+                        userSource.removeObserver(this);
                     }
                 }
             });
