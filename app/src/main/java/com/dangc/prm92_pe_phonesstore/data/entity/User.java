@@ -21,11 +21,25 @@ public class User {
     @ColumnInfo(name = "password")
     private String password;
 
+    @ColumnInfo(name = "role") // THÊM DÒNG NÀY ĐỂ ÁNH XẠ CỘT ROLE
+    private String role; // THÊM TRƯỜNG ROLE MỚI
+
     // Constructors
+    // Constructor khi đăng ký (User mặc định, Admin sẽ được tạo riêng)
     public User(String fullName, String email, String password) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
+        this.role = "User"; // Mặc định là "User" khi đăng ký
+    }
+
+    // Constructor đầy đủ (cho Room khi đọc hoặc Update, có role)
+    public User(int userId, String fullName, String email, String password, String role) {
+        this.userId = userId;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.role = role; // Thêm role vào đây
     }
 
     // Getters
@@ -45,6 +59,10 @@ public class User {
         return password;
     }
 
+    public String getRole() { // GETTER MỚI
+        return role;
+    }
+
     // Setters
     public void setUserId(int userId) {
         this.userId = userId;
@@ -60,5 +78,9 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setRole(String role) { // SETTER MỚI
+        this.role = role;
     }
 }
