@@ -46,7 +46,7 @@ public class ProductDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Khởi tạo Views
+        // Initialize views
         imageViewProductDetail = view.findViewById(R.id.imageViewProductDetail);
         labelModelName = view.findViewById(R.id.labelModelName);
         labelBrand = view.findViewById(R.id.labelBrand);
@@ -62,14 +62,12 @@ public class ProductDetailFragment extends Fragment {
         if (productId != -1) {
             productViewModel.getProductById(productId).observe(getViewLifecycleOwner(), product -> {
                 if (product != null) {
-                    // Cập nhật tiêu đề Toolbar với tên sản phẩm
+                    // Update UI with product details
                     requireActivity().setTitle(product.getModelName());
-                    
                     textViewNameDetail.setText(product.getModelName());
                     textViewBrandDetail.setText(product.getBrand());
                     textViewPriceDetail.setText(String.format("$%.2f", product.getPrice()));
                     textViewDescriptionDetail.setText(product.getDescription());
-
                     Glide.with(this)
                             .load(product.getImageUrl())
                             .placeholder(R.drawable.ic_image_placeholder)

@@ -57,7 +57,6 @@ public class AddEditProductFragment extends Fragment {
         buttonSave.setOnClickListener(v -> saveProduct());
 
         if (currentProductId != -1) {
-            // Chế độ Edit
             requireActivity().setTitle("Edit Product");
             productViewModel.getProductById(currentProductId).observe(getViewLifecycleOwner(), product -> {
                 if (product != null) {
@@ -70,7 +69,6 @@ public class AddEditProductFragment extends Fragment {
                 }
             });
         } else {
-            // Chế độ Add
             requireActivity().setTitle("Add Product");
         }
     }
@@ -90,7 +88,6 @@ public class AddEditProductFragment extends Fragment {
         double price = Double.parseDouble(priceStr);
 
         if (currentProductId != -1 && currentProduct != null) {
-            // Update
             currentProduct.setModelName(modelName);
             currentProduct.setBrand(brand);
             currentProduct.setDescription(description);
@@ -99,7 +96,6 @@ public class AddEditProductFragment extends Fragment {
             productViewModel.update(currentProduct);
             Toast.makeText(getContext(), "Product updated", Toast.LENGTH_SHORT).show();
         } else {
-            // Insert
             Product newProduct = new Product(modelName, brand, description, price, imageUrl);
             productViewModel.insert(newProduct);
             Toast.makeText(getContext(), "Product added", Toast.LENGTH_SHORT).show();

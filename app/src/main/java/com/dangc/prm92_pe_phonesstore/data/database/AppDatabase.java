@@ -23,7 +23,6 @@ import java.util.concurrent.Executors;
 @Database(entities = {User.class, Product.class, Order.class, OrderItem.class}, version = 1, exportSchema = false)
 @TypeConverters({DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
-
     public abstract UserDao userDao();
     public abstract ProductDao productDao();
     public abstract OrderDao orderDao();
@@ -31,7 +30,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
-    // KHÔNG CÒN LÀ STATIC
+
     public final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 

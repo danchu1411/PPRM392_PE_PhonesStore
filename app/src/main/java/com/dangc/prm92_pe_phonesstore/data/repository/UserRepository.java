@@ -21,7 +21,6 @@ public class UserRepository {
         this.databaseWriteExecutor = executorService;
     }
 
-    // Database Operations
     public void register(User user) {
         databaseWriteExecutor.execute(() -> userDao.insert(user));
     }
@@ -38,7 +37,6 @@ public class UserRepository {
         return userDao.getUserById(userId);
     }
 
-    // Session (SharedPreferences) Operations
     public void saveLoginSession(User user) {
         if (user != null) {
             userPreferences.saveCurrentUser(user.getUserId());

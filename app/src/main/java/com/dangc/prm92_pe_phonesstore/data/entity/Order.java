@@ -16,7 +16,7 @@ import java.util.Date;
                                   parentColumns = "user_id",
                                   childColumns = "user_id",
                                   onDelete = ForeignKey.CASCADE),
-        indices = {@Index(value = {"user_id"})}) // <--- THÊM DÒNG NÀY
+        indices = {@Index(value = {"user_id"})})
 @TypeConverters(DateConverter.class)
 public class Order {
 

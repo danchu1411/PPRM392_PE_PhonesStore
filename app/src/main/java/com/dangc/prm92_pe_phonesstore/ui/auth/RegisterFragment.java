@@ -50,13 +50,11 @@ public class RegisterFragment extends Fragment {
             String password = editTextPassword.getText().toString().trim();
             String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
-            // 1. Validation của riêng UI Layer
             if (!password.equals(confirmPassword)) {
                 Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
-                return; // Dừng lại ở đây
+                return;
             }
-            
-            // 2. Giao cho ViewModel xử lý logic nghiệp vụ và các validation còn lại
+
             authViewModel.register(fullName, email, password);
         });
 
@@ -65,15 +63,12 @@ public class RegisterFragment extends Fragment {
             navController.navigateUp();
         });
 
-        // Quan sát kết quả từ ViewModel
         authViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null && !message.isEmpty()) {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                if (message.equals("Đăng ký thành công!")) {
-                    // Tự động quay về màn hình login sau khi đăng ký thành công
+                if (message.equals("Registration successful")) {
                     Navigation.findNavController(view).navigateUp();
                 }
-                // "Tiêu thụ" sự kiện toast để nó không hiện lại
                 authViewModel.doneShowingToast();
             }
         });

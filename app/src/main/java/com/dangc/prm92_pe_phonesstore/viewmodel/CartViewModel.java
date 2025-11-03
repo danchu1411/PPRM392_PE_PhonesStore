@@ -47,22 +47,20 @@ public class CartViewModel extends AndroidViewModel {
         Map<Product, Integer> currentCart = _cartItems.getValue();
         if (currentCart == null) currentCart = new HashMap<>();
 
-        // TẠO MỘT MAP MỚI ĐỂ ĐẢM BẢO LiveData NHẬN RA SỰ THAY ĐỔI
         Map<Product, Integer> newCart = new HashMap<>(currentCart);
 
         int quantity = newCart.containsKey(product) ? newCart.get(product) + 1 : 1;
         newCart.put(product, quantity);
-        _cartItems.setValue(newCart); // Đặt Map MỚI
+        _cartItems.setValue(newCart);
         updateTotalPrice();
     }
 
     public void removeProductFromCart(Product product) {
         Map<Product, Integer> currentCart = _cartItems.getValue();
         if (currentCart != null && currentCart.containsKey(product)) {
-            // TẠO MỘT MAP MỚI
             Map<Product, Integer> newCart = new HashMap<>(currentCart);
             newCart.remove(product);
-            _cartItems.setValue(newCart); // Đặt Map MỚI
+            _cartItems.setValue(newCart);
             updateTotalPrice();
         }
     }
@@ -84,7 +82,7 @@ public class CartViewModel extends AndroidViewModel {
         }
 
         orderRepository.insertOrder(order, orderItems);
-        _cartItems.setValue(new HashMap<>()); // Xóa giỏ hàng bằng một Map MỚI rỗng
+        _cartItems.setValue(new HashMap<>());
         updateTotalPrice();
     }
 
@@ -93,7 +91,6 @@ public class CartViewModel extends AndroidViewModel {
         if (currentCart == null) currentCart = new HashMap<>();
 
         if (currentCart.containsKey(product)) {
-            // TẠO MỘT MAP MỚI
             Map<Product, Integer> newCart = new HashMap<>(currentCart);
             int quantity = newCart.get(product);
             if (quantity > 1) {
@@ -101,7 +98,7 @@ public class CartViewModel extends AndroidViewModel {
             } else {
                 newCart.remove(product);
             }
-            _cartItems.setValue(newCart); // Đặt Map MỚI
+            _cartItems.setValue(newCart);
             updateTotalPrice();
         }
     }

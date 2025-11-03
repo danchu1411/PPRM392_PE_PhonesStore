@@ -48,7 +48,6 @@ public class AuthViewModel extends AndroidViewModel {
         return userRepository.getCurrentUserId();
     }
 
-
     private void checkCurrentUser() {
         if (userRepository.isLoggedIn()) {
             int userId = userRepository.getCurrentUserId();

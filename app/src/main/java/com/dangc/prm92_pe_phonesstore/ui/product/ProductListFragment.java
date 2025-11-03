@@ -29,7 +29,6 @@ import com.dangc.prm92_pe_phonesstore.ui.auth.AuthActivity;
 import com.dangc.prm92_pe_phonesstore.viewmodel.AuthViewModel;
 import com.dangc.prm92_pe_phonesstore.viewmodel.CartViewModel;
 import com.dangc.prm92_pe_phonesstore.viewmodel.ProductViewModel;
-// XÓA DÒNG NÀY: import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ProductListFragment extends Fragment implements ProductAdapter.OnProductActionClickListener {
@@ -44,7 +43,6 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
     private ProgressBar progressBar;
     private TextView textViewEmpty;
     private FloatingActionButton fabAddProduct;
-    // XÓA DÒNG NÀY: private MaterialToolbar toolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

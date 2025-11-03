@@ -18,7 +18,6 @@ public class ProductRepository {
         this.databaseWriteExecutor = executorService;
     }
 
-    // Read operations
     public LiveData<List<Product>> getAllProducts() {
         return productDao.getAllProducts();
     }

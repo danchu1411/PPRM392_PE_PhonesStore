@@ -78,7 +78,7 @@ public class ProductViewModel extends AndroidViewModel {
                 sortType.setValue(SortType.PRICE_DESC);
                 break;
             case PRICE_DESC:
-                sortType.setValue(SortType.NONE); // Quay lại trạng thái mặc định
+                sortType.setValue(SortType.NONE);
                 break;
         }
     }

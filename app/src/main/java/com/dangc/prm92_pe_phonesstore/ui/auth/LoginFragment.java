@@ -46,8 +46,6 @@ public class LoginFragment extends Fragment {
         buttonLogin = view.findViewById(R.id.buttonLogin);
         textViewRegister = view.findViewById(R.id.textViewRegister);
 
-        // Không cần load credentials nữa
-
         buttonLogin.setOnClickListener(v -> {
             String email = editTextEmail.getText().toString().trim();
             String password = editTextPassword.getText().toString().trim();

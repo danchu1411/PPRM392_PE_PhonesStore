@@ -11,6 +11,4 @@ public interface OrderItemDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(OrderItem orderItem);
-
-    // Có thể thêm các query để lấy chi tiết đơn hàng sau này
 }

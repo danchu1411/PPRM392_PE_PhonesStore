@@ -35,7 +35,6 @@ public class Product {
         this.imageUrl = imageUrl;
     }
 
-    // Getters
     public int getProductId() {
         return productId;
     }

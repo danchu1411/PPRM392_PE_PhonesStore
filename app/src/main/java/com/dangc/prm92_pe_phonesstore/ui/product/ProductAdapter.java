@@ -73,7 +73,6 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
             buttonEdit = itemView.findViewById(R.id.buttonEdit);
             buttonDelete = itemView.findViewById(R.id.buttonDelete);
 
-            // Listener cho cả item view (để xem chi tiết) - ĐÃ ĐƯỢC THÊM LẠI
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {
@@ -81,7 +80,6 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
                 }
             });
 
-            // Listeners cho các nút hành động
             buttonAddToCart.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (listener != null && position != RecyclerView.NO_POSITION) {

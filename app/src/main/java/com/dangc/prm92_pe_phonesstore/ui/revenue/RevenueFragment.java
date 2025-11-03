@@ -40,11 +40,9 @@ public class RevenueFragment extends Fragment {
     private RadioGroup radioGroupFilter;
     private RadioButton radioTotal, radioDaily, radioMonthly, radioYearly;
 
-    // Daily Filter
     private TextInputLayout textFieldDailyDate;
     private TextInputEditText editTextDailyDate;
 
-    // Monthly/Yearly Filters
     private LinearLayout layoutMonthlyYearlyFilter;
     private Spinner spinnerMonth;
     private Spinner spinnerYear;
@@ -53,7 +51,7 @@ public class RevenueFragment extends Fragment {
     private SimpleDateFormat monthlyDateFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
     private SimpleDateFormat yearlyDateFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
 
-    private int selectedMonth; // 0-11
+    private int selectedMonth;
     private int selectedYear;
 
     @Override
@@ -66,7 +64,6 @@ public class RevenueFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Khởi tạo Views
         textViewTotalRevenue = view.findViewById(R.id.textViewTotalRevenue);
         radioGroupFilter = view.findViewById(R.id.radioGroupFilter);
         radioTotal = view.findViewById(R.id.radioTotal);
@@ -74,7 +71,6 @@ public class RevenueFragment extends Fragment {
         radioMonthly = view.findViewById(R.id.radioMonthly);
         radioYearly = view.findViewById(R.id.radioYearly);
 
-        // KHỞI TẠO BIẾN ĐỂ KHỚP VỚI ID MỚI TRONG LAYOUT
         textFieldDailyDate = view.findViewById(R.id.textFieldDailyDate);
         editTextDailyDate = view.findViewById(R.id.editTextDailyDate);
 
@@ -82,24 +78,19 @@ public class RevenueFragment extends Fragment {
         spinnerMonth = view.findViewById(R.id.spinnerMonth);
         spinnerYear = view.findViewById(R.id.spinnerYear);
 
-        // 2. Khởi tạo ViewModel (sử dụng requireActivity() để chia sẻ instance)
         revenueViewModel = new ViewModelProvider(requireActivity()).get(RevenueViewModel.class);
 
-        // 3. Đặt tiêu đề cho Toolbar chung của MainActivity
-        requireActivity().setTitle("Revenue"); // Sử dụng resource string
+        requireActivity().setTitle("Revenue");
 
-        // 4. Khởi tạo Spinner Tháng/Năm
         setupMonthSpinner();
         setupYearSpinner();
 
-        // Đặt giá trị mặc định cho tháng/năm hiện tại
         Calendar now = Calendar.getInstance();
-        selectedMonth = now.get(Calendar.MONTH); // Calendar.MONTH là 0-11, trùng với position của spinner
-        spinnerMonth.setSelection(selectedMonth); // Đặt spinner về tháng hiện tại
-        selectedYear = now.get(Calendar.YEAR); // Cập nhật selectedYear
-        spinnerYear.setSelection(findYearPosition(selectedYear)); // Đặt spinner về năm hiện tại
+        selectedMonth = now.get(Calendar.MONTH);
+        spinnerMonth.setSelection(selectedMonth);
+        selectedYear = now.get(Calendar.YEAR);
+        spinnerYear.setSelection(findYearPosition(selectedYear));
 
-        // 5. Quan sát LiveData doanh thu
         revenueViewModel.revenue.observe(getViewLifecycleOwner(), revenue -> {
             if (revenue != null) {
                 textViewTotalRevenue.setText(String.format("$%.2f", revenue));
@@ -108,7 +99,6 @@ public class RevenueFragment extends Fragment {
             }
         });
 
-        // 6. Xử lý sự kiện thay đổi bộ lọc RadioGroup
         radioGroupFilter.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.radioTotal) {
                 revenueViewModel.setFilterType(RevenueViewModel.RevenueFilterType.TOTAL);
@@ -118,7 +108,6 @@ public class RevenueFragment extends Fragment {
                 revenueViewModel.setFilterType(RevenueViewModel.RevenueFilterType.DAILY);
                 textFieldDailyDate.setVisibility(View.VISIBLE);
                 layoutMonthlyYearlyFilter.setVisibility(View.GONE);
-                // Đặt ngày hiện tại cho Daily nếu chưa có
                 if (editTextDailyDate.getText().toString().isEmpty()) {
                     editTextDailyDate.setText(dailyDateFormat.format(now.getTime()));
                 }
@@ -133,22 +122,19 @@ public class RevenueFragment extends Fragment {
                 layoutMonthlyYearlyFilter.setVisibility(View.VISIBLE);
                 spinnerMonth.setVisibility(View.GONE);
             }
-            updateRevenueFilter(); // Cập nhật ViewModel sau khi đổi loại lọc
+            updateRevenueFilter();
         });
 
-        // 7. Xử lý sự kiện click vào trường chọn ngày (cho Daily)
         editTextDailyDate.setOnClickListener(v -> showDatePicker());
         textFieldDailyDate.setEndIconOnClickListener(v -> showDatePicker());
-
-        // 8. Xử lý sự kiện chọn Tháng/Năm từ Spinner
         spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedMonth = position; // Calendar.MONTH là 0-11, trùng với position của spinner
+                selectedMonth = position;
                 updateRevenueFilter();
             }
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {} // Bắt buộc phải có
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         spinnerYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -160,17 +146,14 @@ public class RevenueFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {} // Bắt buộc phải có
         });
-
-
-        // Khởi tạo ban đầu (chọn Total và cập nhật ngày mặc định nếu có)
         radioTotal.setChecked(true);
-        updateRevenueFilter(); // Gọi lần đầu để kích hoạt ViewModel
+        updateRevenueFilter();
     }
 
     private void setupMonthSpinner() {
         List<String> months = new ArrayList<>();
         String[] monthNames = new DateFormatSymbols(Locale.getDefault()).getMonths();
-        for (int i = 0; i < 12; i++) { // Lặp 12 lần cho 12 tháng
+        for (int i = 0; i < 12; i++) {
             months.add(monthNames[i]);
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
@@ -182,7 +165,7 @@ public class RevenueFragment extends Fragment {
     private void setupYearSpinner() {
         List<String> years = new ArrayList<>();
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        for (int i = currentYear; i >= currentYear - 10; i--) { // Lùi 10 năm
+        for (int i = currentYear; i >= currentYear - 10; i--) {
             years.add(String.valueOf(i));
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
@@ -198,14 +181,12 @@ public class RevenueFragment extends Fragment {
                 return i;
             }
         }
-        return 0; // Mặc định là năm đầu tiên trong danh sách
+        return 0;
     }
 
 
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
-
-        // Cố gắng parse ngày hiện tại trên EditText để hiển thị trên DatePicker
         if (!editTextDailyDate.getText().toString().isEmpty()) {
             try {
                 Date date = dailyDateFormat.parse(editTextDailyDate.getText().toString());
@@ -225,7 +206,7 @@ public class RevenueFragment extends Fragment {
                     selectedDate.set(year, month, dayOfMonth);
 
                     editTextDailyDate.setText(dailyDateFormat.format(selectedDate.getTime()));
-                    updateRevenueFilter(); // Cập nhật ViewModel khi ngày được chọn
+                    updateRevenueFilter();
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -242,12 +223,10 @@ public class RevenueFragment extends Fragment {
         if (currentType == RevenueViewModel.RevenueFilterType.DAILY) {
             formattedDate = editTextDailyDate.getText().toString();
         } else if (currentType == RevenueViewModel.RevenueFilterType.MONTHLY) {
-            // Calendar.MONTH là 0-11, cần cộng 1
             formattedDate = String.format(Locale.getDefault(), "%d-%02d", selectedYear, selectedMonth + 1);
         } else if (currentType == RevenueViewModel.RevenueFilterType.YEARLY) {
             formattedDate = String.valueOf(selectedYear);
         }
-        // Nếu là TOTAL, formattedDate sẽ là null, điều này đúng
         revenueViewModel.setFilterDate(formattedDate);
     }
 }
