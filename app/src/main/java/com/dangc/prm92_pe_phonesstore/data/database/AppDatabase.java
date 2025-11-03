@@ -2,10 +2,13 @@ package com.dangc.prm92_pe_phonesstore.data.database;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.dangc.prm92_pe_phonesstore.data.converter.DateConverter;
 import com.dangc.prm92_pe_phonesstore.data.dao.OrderDao;
@@ -20,7 +23,7 @@ import com.dangc.prm92_pe_phonesstore.data.entity.User;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Product.class, Order.class, OrderItem.class}, version = 1, exportSchema = false)
+@Database(entities = {User.class, Product.class, Order.class, OrderItem.class}, version = 2, exportSchema = false)
 @TypeConverters({DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();
@@ -40,10 +43,42 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "phone_store_database")
+                            .addMigrations(MIGRATION_1_2)
+                            .addCallback(sRoomDatabaseCallback)
                             .build();
                 }
             }
         }
         return INSTANCE;
     }
+
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'User'");
+        }
+    };
+
+    // SỬA LỖI: databaseWriteExecutor được truy cập thông qua INSTANCE.databaseWriteExecutor
+    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            if (INSTANCE != null) { // Đảm bảo INSTANCE không null trước khi sử dụng
+                INSTANCE.databaseWriteExecutor.execute(() -> {
+                    UserDao dao = INSTANCE.userDao();
+                    if (dao.getUserCount() == 0) { // Lỗi này sẽ được khắc phục trong UserDao
+                        User adminUser = new User(
+                                0,
+                                "Admin User",
+                                "admin@example.com",
+                                "admin123",
+                                "Admin"
+                        );
+                        dao.insert(adminUser);
+                    }
+                });
+            }
+        }
+    };
 }

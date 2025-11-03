@@ -20,10 +20,16 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     User findByEmail(String email);
-    
+
     @Query("SELECT * FROM users WHERE user_id = :userId LIMIT 1")
     LiveData<User> getUserById(int userId);
 
+    @Query("SELECT * FROM users WHERE user_id = :userId LIMIT 1")
+    User getUserByIdSync(int userId); // Phương thức đồng bộ cho AuthViewModel
+
     @Update
     void update(User user);
+
+    @Query("SELECT COUNT(*) FROM users") // THÊM DÒNG NÀY
+    int getUserCount(); // PHƯƠNG THỨC NÀY ĐỂ KIỂM TRA SỐ LƯỢNG USER
 }
