@@ -1,28 +1,30 @@
 package com.dangc.prm92_pe_phonesstore.data.repository;
 
 import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 
 import com.dangc.prm92_pe_phonesstore.data.dao.UserDao;
 import com.dangc.prm92_pe_phonesstore.data.entity.User;
-import com.dangc.prm92_pe_phonesstore.data.prefs.UserPreferences;
+import com.dangc.prm92_pe_phonesstore.data.prefs.UserPreferences; // Đảm bảo import này có
 
 import java.util.concurrent.ExecutorService;
 
 public class UserRepository {
 
     private final UserDao userDao;
-    private final UserPreferences userPreferences;
-    private final ExecutorService databaseWriteExecutor;
+    private final ExecutorService executorService;
+    private final UserPreferences userPreferences; // Đảm bảo biến này có
 
-    public UserRepository(UserDao userDao, Context context, ExecutorService executorService) {
+    // SỬA CONSTRUCTOR ĐỂ KHỚP VỚI AUTHVIEWMODEL
+    public UserRepository(Context context, UserDao userDao, ExecutorService executorService, UserPreferences userPreferences) {
         this.userDao = userDao;
-        this.userPreferences = new UserPreferences(context);
-        this.databaseWriteExecutor = executorService;
+        this.executorService = executorService;
+        this.userPreferences = userPreferences;
     }
 
-    public void register(User user) {
-        databaseWriteExecutor.execute(() -> userDao.insert(user));
+    public long register(User user) { // ĐẢM BẢO TRẢ VỀ long
+        return userDao.insert(user);
     }
 
     public User login(String email, String password) {
@@ -30,28 +32,35 @@ public class UserRepository {
     }
 
     public void updateUser(User user) {
-        databaseWriteExecutor.execute(() -> userDao.update(user));
-    }
-    
-    public LiveData<User> getUserById(int userId) {
-        return userDao.getUserById(userId);
+        executorService.execute(() -> userDao.update(user));
     }
 
-    public void saveLoginSession(User user) {
-        if (user != null) {
-            userPreferences.saveCurrentUser(user.getUserId());
-        }
+    public User findByEmail(String email) { // THÊM PHƯƠNG THỨC NÀY
+        return userDao.findByEmail(email);
     }
 
-    public void clearLoginSession() {
+    public User getUserByIdSync(int userId) { // THÊM PHƯƠNG THỨC NÀY
+        return userDao.getUserByIdSync(userId);
+    }
+
+    // Quản lý session thông qua UserPreferences
+    public void saveCurrentUser(int userId) {
+        userPreferences.saveCurrentUser(userId);
+    }
+
+    public void clearCurrentUser() {
         userPreferences.clearCurrentUser();
     }
 
     public int getCurrentUserId() {
         return userPreferences.getCurrentUserId();
     }
-    
-    public boolean isLoggedIn() {
-        return getCurrentUserId() != UserPreferences.NO_USER_LOGGED_IN;
+
+    public boolean getRememberMeStatus() { // THÊM PHƯƠNG THỨC NÀY
+        return userPreferences.getRememberMeStatus();
+    }
+
+    public void setRememberMeStatus(boolean rememberMe) { // THÊM PHƯƠNG THỨC NÀY
+        userPreferences.setRememberMeStatus(rememberMe);
     }
 }

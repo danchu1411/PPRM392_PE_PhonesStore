@@ -13,7 +13,7 @@ import com.dangc.prm92_pe_phonesstore.data.entity.User;
 public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    long insert(User user);
+    long insert(User user); // SỬA: Đảm bảo trả về long
 
     @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
     User findByEmailAndPassword(String email, String password);
@@ -25,11 +25,11 @@ public interface UserDao {
     LiveData<User> getUserById(int userId);
 
     @Query("SELECT * FROM users WHERE user_id = :userId LIMIT 1")
-    User getUserByIdSync(int userId); // Phương thức đồng bộ cho AuthViewModel
+    User getUserByIdSync(int userId); // THÊM PHƯƠNG THỨC NÀY
 
     @Update
     void update(User user);
 
-    @Query("SELECT COUNT(*) FROM users") // THÊM DÒNG NÀY
-    int getUserCount(); // PHƯƠNG THỨC NÀY ĐỂ KIỂM TRA SỐ LƯỢNG USER
+    @Query("SELECT COUNT(*) FROM users")
+    int getUserCount();
 }
