@@ -18,6 +18,7 @@ import com.dangc.prm92_pe_phonesstore.data.entity.Product;
 public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductViewHolder> {
 
     private OnProductActionClickListener listener;
+    private boolean isAdmin = false;
 
     public ProductAdapter() {
         super(DIFF_CALLBACK);
@@ -56,12 +57,23 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
                 .placeholder(R.drawable.ic_image_placeholder)
                 .error(R.drawable.ic_image_broken)
                 .into(holder.imageViewProduct);
+
+        // ẨN/HIỆN CÁC NÚT DỰA TRÊN VAI TRÒ ADMIN
+        if (isAdmin) {
+            holder.buttonEdit.setVisibility(View.VISIBLE);
+            holder.buttonDelete.setVisibility(View.VISIBLE);
+            holder.buttonAddToCart.setVisibility(View.GONE); // ADMIN KHÔNG THẤY "Add to Cart"
+        } else {
+            holder.buttonEdit.setVisibility(View.GONE);
+            holder.buttonDelete.setVisibility(View.GONE);
+            holder.buttonAddToCart.setVisibility(View.VISIBLE); // USER THƯỜNG THẤY "Add to Cart"
+        }
     }
 
     class ProductViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textViewName, textViewBrand, textViewPrice;
-        private final ImageView imageViewProduct;
-        private final ImageButton buttonAddToCart, buttonEdit, buttonDelete;
+        final TextView textViewName, textViewBrand, textViewPrice;
+        final ImageView imageViewProduct;
+        final ImageButton buttonAddToCart, buttonEdit, buttonDelete;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -112,5 +124,12 @@ public class ProductAdapter extends ListAdapter<Product, ProductAdapter.ProductV
 
     public void setOnProductActionClickListener(OnProductActionClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setAdminMode(boolean isAdmin) {
+        if (this.isAdmin != isAdmin) {
+            this.isAdmin = isAdmin;
+            notifyDataSetChanged();
+        }
     }
 }

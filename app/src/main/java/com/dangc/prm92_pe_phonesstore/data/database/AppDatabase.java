@@ -52,22 +52,27 @@ public abstract class AppDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
+    // SỬA LỖI: Cập nhật tài khoản Admin đã tồn tại thay vì Insert
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'User'");
+            // Bước 1: Thêm cột 'role' (cho phép null ban đầu)
+            database.execSQL("ALTER TABLE users ADD COLUMN role TEXT");
+
+            // Bước 2: Cập nhật vai trò cho tài khoản admin đã có
+            database.execSQL("UPDATE users SET role = 'Admin' WHERE email = 'admin@example.com'");
         }
     };
 
-    // SỬA LỖI: databaseWriteExecutor được truy cập thông qua INSTANCE.databaseWriteExecutor
+    // Callback này sẽ xử lý việc tạo Admin nếu database được tạo MỚI HOÀN TOÀN
     private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-            if (INSTANCE != null) { // Đảm bảo INSTANCE không null trước khi sử dụng
+            if (INSTANCE != null) {
                 INSTANCE.databaseWriteExecutor.execute(() -> {
                     UserDao dao = INSTANCE.userDao();
-                    if (dao.getUserCount() == 0) { // Lỗi này sẽ được khắc phục trong UserDao
+                    if (dao.getUserCount() == 0) {
                         User adminUser = new User(
                                 0,
                                 "Admin User",

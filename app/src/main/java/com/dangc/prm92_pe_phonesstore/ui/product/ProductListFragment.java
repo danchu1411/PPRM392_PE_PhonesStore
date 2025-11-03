@@ -1,10 +1,10 @@
 package com.dangc.prm92_pe_phonesstore.ui.product;
 
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +32,6 @@ import com.dangc.prm92_pe_phonesstore.viewmodel.ProductViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ProductListFragment extends Fragment implements ProductAdapter.OnProductActionClickListener {
-
-    private static final String TAG = "ProductListFragment";
 
     private ProductViewModel productViewModel;
     private AuthViewModel authViewModel;
@@ -72,6 +70,19 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
 
+        authViewModel.loggedInUser.observe(getViewLifecycleOwner(), user -> {
+            boolean isAdmin = authViewModel.isAdmin();
+            
+            if (isAdmin) {
+                fabAddProduct.setVisibility(View.VISIBLE);
+            } else {
+                fabAddProduct.setVisibility(View.GONE);
+            }
+
+            adapter.setAdminMode(isAdmin);
+            requireActivity().invalidateOptionsMenu();
+        });
+
         productViewModel.products.observe(getViewLifecycleOwner(), products -> {
             progressBar.setVisibility(View.GONE);
             adapter.submitList(products);
@@ -102,6 +113,18 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.main_menu, menu);
 
+        boolean isAdmin = authViewModel.isAdmin();
+
+        MenuItem viewRevenueItem = menu.findItem(R.id.action_view_revenue);
+        if (viewRevenueItem != null) {
+            viewRevenueItem.setVisible(isAdmin);
+        }
+
+        MenuItem viewCartItem = menu.findItem(R.id.action_view_cart);
+        if (viewCartItem != null) {
+            viewCartItem.setVisible(!isAdmin);
+        }
+
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -127,15 +150,19 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
             productViewModel.toggleSortOrder();
             return true;
         } else if (itemId == R.id.action_view_cart) {
-            navController.navigate(R.id.action_productListFragment_to_cartFragment);
+            if (!authViewModel.isAdmin()) { // Chỉ User thường mới vào được Cart
+                navController.navigate(R.id.action_productListFragment_to_cartFragment);
+            }
             return true;
         } else if (itemId == R.id.action_view_revenue) {
-            navController.navigate(R.id.action_productListFragment_to_revenueFragment);
+            if (authViewModel.isAdmin()) {
+                navController.navigate(R.id.action_productListFragment_to_revenueFragment);
+            }
             return true;
         } else if (itemId == R.id.action_view_logout) {
             showLogoutConfirmationDialog();
             return true;
-        } else if(itemId == R.id.action_view_profile) {
+        } else if (itemId == R.id.action_view_profile) {
             navController.navigate(R.id.action_productListFragment_to_profileFragment);
             return true;
         }
@@ -167,27 +194,33 @@ public class ProductListFragment extends Fragment implements ProductAdapter.OnPr
 
     @Override
     public void onAddToCartClick(Product product) {
-        cartViewModel.addProductToCart(product);
-        Toast.makeText(getContext(), "Added " + product.getModelName() + " to cart", Toast.LENGTH_SHORT).show();
+        if (!authViewModel.isAdmin()) {
+            cartViewModel.addProductToCart(product);
+            Toast.makeText(getContext(), "Added " + product.getModelName() + " to cart", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onEditClick(Product product) {
-        Bundle bundle = new Bundle();
-        bundle.putInt("productId", product.getProductId());
-        Navigation.findNavController(requireView()).navigate(R.id.action_productListFragment_to_addEditProductFragment, bundle);
+        if (authViewModel.isAdmin()) {
+            Bundle bundle = new Bundle();
+            bundle.putInt("productId", product.getProductId());
+            Navigation.findNavController(requireView()).navigate(R.id.action_productListFragment_to_addEditProductFragment, bundle);
+        }
     }
 
     @Override
     public void onDeleteClick(Product product) {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Delete Product")
-                .setMessage("Are you sure you want to delete " + product.getModelName() + "?")
-                .setPositiveButton("Delete", (dialog, which) -> {
-                    productViewModel.delete(product);
-                    Toast.makeText(getContext(), product.getModelName() + " deleted", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+        if (authViewModel.isAdmin()) {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Product")
+                    .setMessage("Are you sure you want to delete " + product.getModelName() + "?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        productViewModel.delete(product);
+                        Toast.makeText(getContext(), product.getModelName() + " deleted", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        }
     }
 }
